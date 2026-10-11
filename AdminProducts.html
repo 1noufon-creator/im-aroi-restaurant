@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>จัดการสินค้า - ร้านอิ่มอร่อย</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:#f5f5f5;color:#333}
+.header{background:#222;color:#fff;padding:18px;display:flex;justify-content:space-between;align-items:center}
+.header h2{margin:0}
+.container{max-width:1250px;margin:25px auto;padding:0 15px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search{padding:12px;width:320px;max-width:100%;border:1px solid #ddd;border-radius:8px}
+button{border:0;padding:10px 15px;border-radius:7px;cursor:pointer}
+.btn-add{background:#198754;color:#fff}.btn-edit{background:#ffc107;color:#222}
+.btn-delete{background:#dc3545;color:#fff}.btn-size{background:#0d6efd;color:#fff}
+.btn-cancel{background:#777;color:#fff}
+.table-box{background:#fff;border-radius:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1050px}
+th,td{padding:12px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle}
+th{background:#eee}
+.product-img{width:60px;height:60px;object-fit:cover;border-radius:8px}
+.status-active{color:green;font-weight:bold}.status-inactive{color:red;font-weight:bold}
+.stock-low{color:red;font-weight:bold}.stock-ok{color:green}
+.variant-row{margin:3px 0;padding:7px 9px;background:#f7f7f7;border-radius:7px}
+.variant-row b{display:inline-block;min-width:28px}
+.action-box{display:flex;gap:5px;flex-wrap:wrap}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:15px;z-index:50}
+.modal-box{background:#fff;width:600px;max-width:100%;max-height:90vh;overflow-y:auto;border-radius:12px;padding:25px}
+.modal-box h2{margin-top:0}
+.form-group{margin-bottom:14px}.form-group label{display:block;margin-bottom:5px;font-weight:bold}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:7px}
+.form-group textarea{height:80px;resize:vertical}
+.size-box{display:flex;gap:10px;flex-wrap:wrap}
+.size-box label{background:#eee;padding:10px 20px;border-radius:7px;cursor:pointer}
+.size-box label.disabled{opacity:.4;cursor:not-allowed}
+.form-buttons{display:flex;gap:10px;margin-top:20px}.form-buttons button{flex:1}
+.loading,.empty{text-align:center;padding:30px}
+.notice{background:#fff8e1;border-left:4px solid #ffc107;padding:12px;margin-bottom:15px;border-radius:7px}
+@media(max-width:700px){
+ .header h2{font-size:18px}.container{margin-top:15px}.modal-box{padding:18px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>🍔 ร้านอิ่มอร่อย - จัดการสินค้า</h2>
+  <button onclick="goBack()" style="background:white;color:#222;">← กลับ</button>
+</div>
+
+<div class="container">
+
+  <div class="topbar">
+    <input
+      id="search"
+      class="search"
+      type="text"
+      placeholder="🔍 ค้นหาสินค้า..."
+      oninput="renderProducts()">
+
+    <button class="btn-add" onclick="openAddModal()">
+      + เพิ่มสินค้าใหม่
+    </button>
+  </div>
+
+  <div class="notice">
+    💡 สินค้าเดียวกัน เช่น <b>เฟรนฟราย</b> จะแสดงรวมกัน และสามารถกด
+    <b>+ เพิ่มขนาด</b> เพื่อเพิ่ม S / M / L ได้
+  </div>
+
+  <div class="table-box">
+
+    <div id="loading" class="loading">
+      กำลังตรวจสอบสิทธิ์และโหลดสินค้า...
+    </div>
+
+    <table id="productTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>รูป</th>
+          <th>สินค้า</th>
+          <th>หมวดหมู่</th>
+          <th>ขนาด / น้ำหนัก / ราคา / Stock</th>
+          <th>สถานะ</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="productBody"></tbody>
+    </table>
+
+  </div>
+</div>
+
+<div id="productModal" class="modal">
+
+  <div class="modal-box">
+
+    <h2 id="modalTitle">เพิ่มสินค้าใหม่</h2>
+
+    <input type="hidden" id="ProductID">
+
+    <div class="form-group">
+      <label>หมวดหมู่</label>
+      <input type="text" id="CategoryID" placeholder="เช่น C001">
+    </div>
+
+    <div class="form-group">
+      <label>ชื่อสินค้า</label>
+      <input type="text" id="ProductName" placeholder="เช่น เฟรนฟราย">
+    </div>
+
+    <div class="form-group">
+      <label>ขนาด</label>
+      <div class="size-box">
+
+        <label id="sizeLabelS">
+          <input type="radio" name="Size" value="S">
+          S
+        </label>
+
+        <label id="sizeLabelM">
+          <input type="radio" name="Size" value="M">
+          M
+        </label>
+
+        <label id="sizeLabelL">
+          <input type="radio" name="Size" value="L">
+          L
+        </label>
+
+      </div>
+
+      <small id="sizeHelp" style="color:#777;"></small>
+    </div>
+
+    <div class="form-group">
+      <label>น้ำหนัก</label>
+      <input type="number" id="Weight" min="0" step="0.01" placeholder="เช่น 100">
+    </div>
+
+    <div class="form-group">
+      <label>ราคา (บาท)</label>
+      <input type="number" id="Price" min="0" step="0.01" placeholder="เช่น 35">
+    </div>
+
+    <div class="form-group">
+      <label>จำนวน Stock</label>
+      <input type="number" id="Stock" min="0" step="1" placeholder="เช่น 20">
+    </div>
+
+    <div class="form-group">
+      <label>URL รูปภาพ</label>
+      <input type="text" id="ImageURL" placeholder="https://...">
+    </div>
+
+    <div class="form-group">
+      <label>รายละเอียด</label>
+      <textarea id="Description" placeholder="รายละเอียดสินค้า"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input type="checkbox" id="Active" checked>
+        เปิดขายสินค้า
+      </label>
+    </div>
+
+    <div class="form-buttons">
+      <button class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn-add" onclick="saveProduct()">บันทึก</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+let products = [];
+let editMode = false;
+let addSizeMode = false;
+
+const token =
+  sessionStorage.getItem("loginToken") ||
+  localStorage.getItem("loginToken");
+
+window.onload = function(){
+  checkAdminAccess();
+};
+
+async function checkAdminAccess(){
+
+  if(!token){
+    alert("กรุณาเข้าสู่ระบบก่อน");
+    location.href = "Users.html";
+    return;
+  }
+
+  try{
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"checkAdmin",
+        token:token
+      })
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      alert(result.message || "คุณไม่มีสิทธิ์เข้าใช้งาน");
+      location.href = "Menu.html";
+      return;
+    }
+
+    await loadProducts();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("ไม่สามารถตรวจสอบสิทธิ์ Admin ได้");
+    location.href = "Users.html";
+  }
+}
+
+async function loadProducts(){
+
+  try{
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"getProducts"
+      })
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      throw new Error(result.message || "โหลดสินค้าไม่สำเร็จ");
+    }
+
+    products = result.products || [];
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("productTable").style.display = "table";
+
+    renderProducts();
+
+  }catch(error){
+
+    console.error(error);
+
+    document.getElementById("loading").textContent =
+      "โหลดสินค้าไม่ได้: " + error.message;
+  }
+}
+
+/* รวมสินค้าเดียวกันจาก ProductName + CategoryID */
+function getGroups(){
+
+  const groups = {};
+
+  products.forEach(product => {
+
+    const key =
+      String(product.CategoryID || "").trim() +
+      "||" +
+      String(product.ProductName || "")
+        .trim()
+        .toLowerCase();
+
+    if(!groups[key]){
+      groups[key] = [];
+    }
+
+    groups[key].push(product);
+  });
+
+  return Object.values(groups);
+}
+
+function renderProducts(){
+
+  const body =
+    document.getElementById("productBody");
+
+  const keyword =
+    document.getElementById("search")
+      .value
+      .trim()
+      .toLowerCase();
+
+  body.innerHTML = "";
+
+  const groups =
+    getGroups().filter(group => {
+
+      const text =
+        group.map(p => [
+          p.ProductName,
+          p.ProductID,
+          p.CategoryID,
+          p.Size
+        ].join(" ")).join(" ");
+
+      return text.toLowerCase()
+        .includes(keyword);
+    });
+
+  if(!groups.length){
+
+    body.innerHTML =
+      '<tr><td colspan="6" class="empty">ไม่พบสินค้า</td></tr>';
+
+    return;
+  }
+
+  groups.forEach(group => {
+
+    group.sort((a,b) => {
+      const order = {S:1,M:2,L:3};
+      return (order[String(a.Size || "").toUpperCase()] || 99) -
+             (order[String(b.Size || "").toUpperCase()] || 99);
+    });
+
+    const first = group[0];
+
+    const active =
+      group.some(p => isActive(p));
+
+    const image =
+      first.ImageURL
+        ? '<img class="product-img" src="' +
+          esc(first.ImageURL) +
+          '" onerror="this.style.display=\'none\'">'
+        : "-";
+
+    const variantHtml =
+      group.map(product => {
+
+        const stock =
+          Number(product.Stock || 0);
+
+        return `
+          <div class="variant-row">
+            <b>${esc(String(product.Size || "-").toUpperCase())}</b>
+            ${esc(product.Weight || 0)} g
+            · ฿${Number(product.Price || 0).toFixed(2)}
+            ·
+            <span class="${stock <= 5 ? "stock-low" : "stock-ok"}">
+              Stock ${stock}
+            </span>
+
+            <button
+              class="btn-edit"
+              style="margin-left:8px;padding:5px 8px"
+              onclick='editProduct(${JSON.stringify(product)})'>
+              แก้ไข
+            </button>
+          </div>
+        `;
+
+      }).join("");
+
+    const row =
+      document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${image}</td>
+
+      <td>
+        <b>${esc(first.ProductName)}</b>
+        <br>
+        <small>
+          ${group.length} ขนาด
+        </small>
+      </td>
+
+      <td>${esc(first.CategoryID || "-")}</td>
+
+      <td>${variantHtml}</td>
+
+      <td>
+        ${
+          active
+            ? '<span class="status-active">เปิดขาย</span>'
+            : '<span class="status-inactive">ปิดขาย</span>'
+        }
+      </td>
+
+      <td>
+        <div class="action-box">
+
+          <button
+            class="btn-size"
+            onclick='openAddSizeModal(${JSON.stringify(first)})'>
+            + เพิ่มขนาด
+          </button>
+
+          ${
+            group.length === 1
+              ? '<button class="btn-delete" onclick="deleteProduct(\'' +
+                esc(first.ProductID) +
+                '\')">ลบ</button>'
+              : ''
+          }
+
+        </div>
+      </td>
+    `;
+
+    body.appendChild(row);
+  });
+}
+
+function isActive(product){
+
+  const value =
+    String(product.Active ?? "")
+      .trim()
+      .toLowerCase();
+
+  return value === "true" ||
+         value === "1" ||
+         value === "active" ||
+         value === "เปิดขาย";
+}
+
+function openAddModal(){
+
+  editMode = false;
+  addSizeMode = false;
+
+  document.getElementById("modalTitle").textContent =
+    "เพิ่มสินค้าใหม่";
+
+  clearForm();
+
+  enableAllSizes();
+
+  document.getElementById("sizeHelp").textContent =
+    "เลือกขนาดของสินค้าใหม่";
+
+  document.getElementById("productModal")
+    .style.display = "flex";
+}
+
+function openAddSizeModal(product){
+
+  editMode = false;
+  addSizeMode = true;
+
+  document.getElementById("modalTitle").textContent =
+    "เพิ่มขนาดของ " + product.ProductName;
+
+  clearForm();
+
+  document.getElementById("CategoryID").value =
+    product.CategoryID || "";
+
+  document.getElementById("ProductName").value =
+    product.ProductName || "";
+
+  document.getElementById("ImageURL").value =
+    product.ImageURL || "";
+
+  document.getElementById("Description").value =
+    product.Description || "";
+
+  document.getElementById("Active").checked = true;
+
+  const existing =
+    products
+      .filter(p =>
+        String(p.CategoryID || "") ===
+          String(product.CategoryID || "") &&
+        String(p.ProductName || "").trim().toLowerCase() ===
+          String(product.ProductName || "").trim().toLowerCase()
+      )
+      .map(p =>
+        String(p.Size || "").toUpperCase()
+      );
+
+  document.querySelectorAll('input[name="Size"]')
+    .forEach(input => {
+
+      input.checked = false;
+      input.disabled =
+        existing.includes(input.value);
+
+      input.parentElement.classList.toggle(
+        "disabled",
+        input.disabled
+      );
+    });
+
+  const available =
+    document.querySelector(
+      'input[name="Size"]:not(:disabled)'
+    );
+
+  if(available){
+    available.checked = true;
+  }
+
+  document.getElementById("sizeHelp").textContent =
+    existing.length
+      ? "ขนาดที่มีแล้ว: " + existing.join(", ")
+      : "ยังไม่มีขนาด";
+
+  document.getElementById("productModal")
+    .style.display = "flex";
+}
+
+function editProduct(product){
+
+  editMode = true;
+  addSizeMode = false;
+
+  document.getElementById("modalTitle").textContent =
+    "แก้ไข " +
+    product.ProductName +
+    " ขนาด " +
+    String(product.Size || "").toUpperCase();
+
+  document.getElementById("ProductID").value =
+    product.ProductID || "";
+
+  document.getElementById("CategoryID").value =
+    product.CategoryID || "";
+
+  document.getElementById("ProductName").value =
+    product.ProductName || "";
+
+  const size =
+    String(product.Size || "S").toUpperCase();
+
+  document.querySelectorAll('input[name="Size"]')
+    .forEach(input => {
+
+      input.disabled = false;
+      input.parentElement.classList.remove("disabled");
+
+      input.checked =
+        input.value === size;
+    });
+
+  document.getElementById("Weight").value =
+    product.Weight || "";
+
+  document.getElementById("Price").value =
+    product.Price || "";
+
+  document.getElementById("Stock").value =
+    product.Stock || "";
+
+  document.getElementById("ImageURL").value =
+    product.ImageURL || "";
+
+  document.getElementById("Description").value =
+    product.Description || "";
+
+  document.getElementById("Active").checked =
+    isActive(product);
+
+  document.getElementById("sizeHelp").textContent =
+    "กำลังแก้ไขข้อมูลขนาดนี้";
+
+  document.getElementById("productModal")
+    .style.display = "flex";
+}
+
+function clearForm(){
+
+  document.getElementById("ProductID").value = "";
+  document.getElementById("CategoryID").value = "";
+  document.getElementById("ProductName").value = "";
+  document.getElementById("Weight").value = "";
+  document.getElementById("Price").value = "";
+  document.getElementById("Stock").value = "";
+  document.getElementById("ImageURL").value = "";
+  document.getElementById("Description").value = "";
+  document.getElementById("Active").checked = true;
+
+  document.querySelectorAll('input[name="Size"]')
+    .forEach(input => {
+      input.checked = false;
+      input.disabled = false;
+      input.parentElement.classList.remove("disabled");
+    });
+
+  const s =
+    document.querySelector(
+      'input[name="Size"][value="S"]'
+    );
+
+  if(s) s.checked = true;
+}
+
+function enableAllSizes(){
+
+  document.querySelectorAll('input[name="Size"]')
+    .forEach(input => {
+      input.disabled = false;
+      input.parentElement.classList.remove("disabled");
+    });
+}
+
+async function saveProduct(){
+
+  const selected =
+    document.querySelector(
+      'input[name="Size"]:checked'
+    );
+
+  if(!selected){
+    alert("กรุณาเลือกขนาด");
+    return;
+  }
+
+  const data = {
+
+    action:
+      editMode
+        ? "updateProduct"
+        : "addProduct",
+
+    token: token,
+
+    ProductID:
+      document.getElementById("ProductID").value,
+
+    CategoryID:
+      document.getElementById("CategoryID").value.trim(),
+
+    ProductName:
+      document.getElementById("ProductName").value.trim(),
+
+    Size:
+      selected.value,
+
+    Weight:
+      document.getElementById("Weight").value,
+
+    Price:
+      document.getElementById("Price").value,
+
+    Stock:
+      document.getElementById("Stock").value,
+
+    ImageURL:
+      document.getElementById("ImageURL").value.trim(),
+
+    Description:
+      document.getElementById("Description").value.trim(),
+
+    Active:
+      document.getElementById("Active").checked
+  };
+
+  if(!data.CategoryID){
+    alert("กรุณากรอก CategoryID");
+    return;
+  }
+
+  if(!data.ProductName){
+    alert("กรุณากรอกชื่อสินค้า");
+    return;
+  }
+
+  if(data.Weight === "" || Number(data.Weight) < 0){
+    alert("กรุณากรอกน้ำหนักให้ถูกต้อง");
+    return;
+  }
+
+  if(data.Price === "" || Number(data.Price) < 0){
+    alert("กรุณากรอกราคาให้ถูกต้อง");
+    return;
+  }
+
+  if(data.Stock === "" || Number(data.Stock) < 0){
+    alert("กรุณากรอก Stock ให้ถูกต้อง");
+    return;
+  }
+
+  /* ตรวจซ้ำก่อนส่ง API สำหรับโหมดเพิ่มขนาด */
+  if(addSizeMode){
+
+    const duplicate =
+      products.some(p =>
+        String(p.CategoryID || "") ===
+          String(data.CategoryID) &&
+
+        String(p.ProductName || "")
+          .trim()
+          .toLowerCase() ===
+        String(data.ProductName || "")
+          .trim()
+          .toLowerCase() &&
+
+        String(p.Size || "")
+          .toUpperCase() ===
+        String(data.Size || "")
+          .toUpperCase()
+      );
+
+    if(duplicate){
+      alert(
+        "สินค้านี้มีขนาด " +
+        data.Size +
+        " อยู่แล้ว"
+      );
+      return;
+    }
+  }
+
+  try{
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      alert(result.message || "บันทึกไม่สำเร็จ");
+      return;
+    }
+
+    alert(result.message || "บันทึกสำเร็จ");
+
+    closeModal();
+
+    await loadProducts();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "เกิดข้อผิดพลาดในการบันทึก: " +
+      error.message
+    );
+  }
+}
+
+async function deleteProduct(productID){
+
+  if(!confirm(
+    "ต้องการลบสินค้าขนาดนี้หรือไม่?\n\n" +
+    "ProductID: " + productID
+  )){
+    return;
+  }
+
+  try{
+
+    const response = await fetch(API_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"deleteProduct",
+        token:token,
+        ProductID:productID
+      })
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      alert(result.message || "ลบสินค้าไม่สำเร็จ");
+      return;
+    }
+
+    alert(result.message || "ลบสินค้าสำเร็จ");
+
+    await loadProducts();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert("ไม่สามารถลบสินค้าได้");
+  }
+}
+
+function closeModal(){
+
+  document.getElementById("productModal")
+    .style.display = "none";
+}
+
+function goBack(){
+  location.href = "AdminDashboard.html";
+}
+
+function esc(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+</script>
+</body>
+</html>

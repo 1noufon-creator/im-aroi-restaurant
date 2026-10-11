@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>เมนูอาหาร | ร้านอิ่มอร่อย</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Tahoma,sans-serif;
+    background:#f7f7f7;
+    color:#222;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    background:#e53935;
+    color:#fff;
+    padding:15px 20px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:bold;
+}
+
+.head-right{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+    border-radius:8px;
+    padding:10px 14px;
+}
+
+.cart{
+    background:#fff;
+    color:#e53935;
+    font-weight:bold;
+}
+
+.track{
+    background:#222;
+    color:#fff;
+    font-weight:bold;
+}
+
+.logout{
+    background:transparent;
+    color:#fff;
+    border:1px solid #fff;
+}
+
+/* ================= MAIN ================= */
+
+main{
+    max-width:1200px;
+    margin:auto;
+    padding:22px 15px;
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+h1{
+    margin:0 0 5px;
+}
+
+.sub{
+    color:#777;
+}
+
+.search{
+    width:330px;
+    max-width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:9px;
+    font-size:16px;
+}
+
+/* ================= CATEGORY ================= */
+
+.cats{
+    display:flex;
+    gap:8px;
+    overflow:auto;
+    padding:18px 0;
+}
+
+.cat{
+    background:#fff;
+    border:1px solid #ddd;
+    white-space:nowrap;
+}
+
+.cat.active{
+    background:#e53935;
+    color:#fff;
+}
+
+/* ================= PRODUCT ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fill,minmax(220px,1fr));
+    gap:18px;
+}
+
+.card{
+    background:#fff;
+    border-radius:13px;
+    overflow:hidden;
+    box-shadow:0 2px 9px #0001;
+}
+
+.pic{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+    background:#eee;
+}
+
+.nop{
+    height:180px;
+    background:#eee;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:50px;
+}
+
+.body{
+    padding:14px;
+}
+
+.name{
+    font-weight:bold;
+    font-size:18px;
+}
+
+.desc{
+    min-height:38px;
+    color:#777;
+    font-size:14px;
+    margin:6px 0;
+}
+
+.price{
+    font-weight:bold;
+    color:#e53935;
+    font-size:20px;
+}
+
+.stock{
+    font-size:13px;
+    margin:6px 0;
+}
+
+.low{
+    color:#d00;
+    font-weight:bold;
+}
+
+.add{
+    width:100%;
+    background:#198754;
+    color:#fff;
+    font-weight:bold;
+}
+
+.add:disabled{
+    background:#aaa;
+}
+
+/* ================= LOADING ================= */
+
+.loading,
+.empty{
+    background:#fff;
+    padding:35px;
+    text-align:center;
+    border-radius:12px;
+    color:#777;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+
+    position:fixed;
+    inset:0;
+
+    background:#0008;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:15px;
+
+    z-index:30;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.box{
+    background:#fff;
+
+    width:480px;
+    max-width:100%;
+
+    padding:22px;
+
+    border-radius:15px;
+}
+
+.head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.size{
+    display:flex;
+    gap:8px;
+}
+
+.size button{
+    flex:1;
+    background:#eee;
+}
+
+.size button.sel{
+    background:#e53935;
+    color:#fff;
+}
+
+.size button:disabled{
+    opacity:.4;
+}
+
+.qty{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin:15px 0;
+}
+
+.qty button{
+    background:#eee;
+    font-size:20px;
+}
+
+.note{
+    width:100%;
+    min-height:70px;
+
+    padding:9px;
+
+    border:1px solid #ddd;
+    border-radius:8px;
+}
+
+.total{
+    display:flex;
+    justify-content:space-between;
+
+    font-size:20px;
+    font-weight:bold;
+
+    margin:15px 0;
+}
+
+.confirm{
+    width:100%;
+    background:#198754;
+    color:#fff;
+    font-size:16px;
+}
+
+/* ================= CART ================= */
+
+.drawer{
+    display:none;
+
+    position:fixed;
+
+    right:0;
+    top:0;
+
+    width:390px;
+    max-width:100%;
+
+    height:100vh;
+
+    background:#fff;
+
+    padding:20px;
+
+    overflow:auto;
+
+    box-shadow:-5px 0 20px #0002;
+
+    z-index:50;
+}
+
+.drawer.show{
+    display:block;
+}
+
+.item{
+    padding:12px 0;
+    border-bottom:1px solid #eee;
+}
+
+.itemtop{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.remove{
+    background:#fff0f0;
+    color:#d00;
+    margin-top:8px;
+}
+
+.checkout{
+    width:100%;
+
+    background:#e53935;
+    color:#fff;
+
+    margin-top:15px;
+
+    font-weight:bold;
+}
+
+.track-cart{
+    width:100%;
+
+    background:#222;
+    color:#fff;
+
+    margin-top:8px;
+
+    font-weight:bold;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+    .track{
+        display:block;
+    }
+
+    .user{
+        display:none;
+    }
+
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:12px;
+    }
+
+    .logo{
+        font-size:18px;
+    }
+
+    .head-right{
+        flex-wrap:wrap;
+        justify-content:flex-end;
+    }
+
+    .head-right button{
+        padding:8px 9px;
+        font-size:12px;
+    }
+
+    .grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+
+        gap:11px;
+    }
+
+    .pic,
+    .nop{
+        height:145px;
+    }
+
+    .body{
+        padding:10px;
+    }
+
+    .name{
+        font-size:16px;
+    }
+
+    .price{
+        font-size:18px;
+    }
+
+}
+
+@media(max-width:380px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🍔 ร้านอิ่มอร่อย
+    </div>
+
+
+    <div class="head-right">
+
+        <span id="user" class="user"></span>
+
+                <button
+            class="track"
+            onclick="location.href='CustomerProfile.html'"
+>
+            👤 โปรไฟล์ของฉัน
+        </button>
+
+        <button
+            class="track"
+            onclick="goTracking()"
+        >
+            📦 ติดตาม
+        </button>
+
+        <button
+            class="track"
+            onclick="location.href='OrderHistory.html'"
+>
+            📋 ประวัติคำสั่งซื้อ
+        </button>
+
+
+                <button
+            class="cart"
+            onclick="openCart()"
+        >
+            🛒 ตะกร้า
+            (<span id="count">0</span>)
+        </button>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            🚪 ออก
+        </button>
+
+    </div>
+
+</header>
+
+
+<main>
+
+    <div class="top">
+
+        <div>
+
+            <h1>
+                เมนูอาหาร
+            </h1>
+
+            <div class="sub">
+                เลือกอาหารและเครื่องดื่มที่ต้องการ
+            </div>
+
+        </div>
+
+        <input
+            id="search"
+            class="search"
+            placeholder="🔍 ค้นหาอาหาร..."
+            oninput="render()"
+        >
+
+    </div>
+
+
+    <div
+        id="cats"
+        class="cats"
+    ></div>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        กำลังโหลดสินค้า...
+    </div>
+
+
+    <div
+        id="empty"
+        class="empty"
+        style="display:none"
+    >
+        ไม่พบสินค้า
+    </div>
+
+
+    <div
+        id="grid"
+        class="grid"
+    ></div>
+
+</main>
+
+
+<!-- ================= SIZE MODAL ================= -->
+
+<div
+    id="modal"
+    class="modal"
+>
+
+    <div class="box">
+
+        <div class="head">
+
+            <h2 id="mname">
+                สินค้า
+            </h2>
+
+            <button
+                onclick="closeModal()"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <div
+            id="mdesc"
+            class="sub"
+        ></div>
+
+
+        <h4>
+            เลือกขนาด
+        </h4>
+
+        <div
+            id="sizes"
+            class="size"
+        ></div>
+
+
+        <h4>
+            จำนวน
+        </h4>
+
+        <div class="qty">
+
+            <button
+                onclick="qty(-1)"
+            >
+                −
+            </button>
+
+            <b id="qty">
+                1
+            </b>
+
+            <button
+                onclick="qty(1)"
+            >
+                +
+            </button>
+
+        </div>
+
+
+        <h4>
+            หมายเหตุ
+        </h4>
+
+        <textarea
+            id="note"
+            class="note"
+            placeholder="เช่น ไม่ใส่ผัก"
+        ></textarea>
+
+
+        <div class="total">
+
+            <span>
+                รวม
+            </span>
+
+            <span id="mtotal">
+                ฿0.00
+            </span>
+
+        </div>
+
+
+        <button
+            id="add"
+            class="confirm"
+            onclick="addCart()"
+        >
+            เพิ่มลงตะกร้า
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= CART DRAWER ================= -->
+
+<aside
+    id="drawer"
+    class="drawer"
+>
+
+    <div class="head">
+
+        <h2>
+            🛒 ตะกร้า
+        </h2>
+
+        <button
+            onclick="closeCart()"
+        >
+            ✕
+        </button>
+
+    </div>
+
+
+    <div id="items"></div>
+
+
+    <div class="total">
+
+        <span>
+            รวม
+        </span>
+
+        <span id="ctotal">
+            ฿0.00
+        </span>
+
+    </div>
+
+
+    <button
+        class="checkout"
+        onclick="summary()"
+    >
+        ไปหน้าสรุปคำสั่งซื้อ
+    </button>
+
+
+    <button
+        class="track-cart"
+        onclick="goTracking()"
+    >
+        📦 ติดตามออเดอร์
+    </button>
+
+</aside>
+
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+
+let products = [];
+let cart = [];
+let categories = [];
+
+let picked = null;
+let size = null;
+let qtyValue = 1;
+let cat = "ALL";
+
+
+const token =
+    sessionStorage.getItem("loginToken") ||
+    localStorage.getItem("loginToken");
+
+
+const user =
+    JSON.parse(
+        sessionStorage.getItem("currentUser") ||
+        localStorage.getItem("currentUser") ||
+        "null"
+    );
+
+// โหลดชื่อหมวดหมู่จาก Google Sheets
+async function loadCategories() {
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                action: "getCategories"
+            })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(
+                result.message || "โหลดหมวดหมู่ไม่สำเร็จ"
+            );
+        }
+
+        categories = result.categories || [];
+
+    } catch (error) {
+        console.error("โหลดหมวดหมู่ไม่สำเร็จ:", error);
+        categories = [];
+    }
+}
+
+// แปลงรหัสหมวดหมู่ให้เป็นชื่อ
+function getCategoryName(categoryID) {
+    const id = String(categoryID || "").trim();
+
+    const category = categories.find(item =>
+        String(item.CategoryID || "").trim() === id
+    );
+
+    return category
+        ? category.CategoryName
+        : id;
+}
+
+/* ================= LOAD ================= */
+
+window.onload = async function() {
+
+    if (!token) {
+        location.href = "Users.html";
+        return;
+    }
+
+    if (user?.Name) {
+        document.getElementById("user").textContent =
+            "สวัสดี, " + user.Name;
+    }
+
+    loadCart();
+
+    // โหลดชื่อหมวดหมู่ก่อน
+    await loadCategories();
+
+    // จากนั้นค่อยโหลดสินค้าและแสดงหมวดหมู่
+    await loadProducts();
+};
+
+
+/* ================= PRODUCTS ================= */
+
+async function loadProducts(){
+
+    try{
+
+        const r =
+            await fetch(
+                API_URL,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "text/plain;charset=utf-8"
+                    },
+
+                    body:JSON.stringify({
+                        action:"getProducts"
+                    })
+                }
+            );
+
+
+        const x =
+            await r.json();
+
+
+        if(!x.success){
+
+            throw new Error(
+                x.message ||
+                "โหลดสินค้าไม่สำเร็จ"
+            );
+
+        }
+
+
+        products =
+            (x.products || [])
+            .filter(p => active(p));
+
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        buildCats();
+
+        render();
+
+
+    }catch(e){
+
+        document.getElementById(
+            "loading"
+        ).textContent =
+            "โหลดสินค้าไม่ได้: " +
+            e.message;
+
+    }
+
+}
+
+
+function getDisplayImageUrl(value) {
+    const url = String(value || "").trim();
+
+    if (!url) return "";
+
+    // รองรับลิงก์ Google Drive หลายรูปแบบ
+    let fileId = "";
+
+    // ตัวอย่าง: https://drive.google.com/file/d/FILE_ID/view
+    let match = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+    if (match) {
+        fileId = match[1];
+    }
+
+    // ตัวอย่าง: https://drive.google.com/open?id=FILE_ID
+    // หรือ https://drive.google.com/uc?id=FILE_ID
+    if (!fileId && /drive\.google\.com/.test(url)) {
+        match = url.match(/[?&]id=([^&]+)/);
+        if (match) {
+            fileId = decodeURIComponent(match[1]);
+        }
+    }
+
+    // ถ้าเป็นลิงก์ Google Drive ให้แปลงเป็นลิงก์รูปภาพ
+    if (fileId) {
+        return "https://drive.google.com/thumbnail?id=" +
+            encodeURIComponent(fileId) +
+            "&sz=w600";
+    }
+
+    // ลิงก์รูปจากแหล่งอื่นให้ใช้ตามเดิม
+    return url;
+}
+
+function active(p){
+
+    const a =
+        String(
+            p.Active ?? ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    return (
+        a === "true" ||
+        a === "1" ||
+        a === "active" ||
+        a === "เปิดขาย"
+    );
+
+}
+
+
+/* ================= CATEGORY ================= */
+
+function buildCats(){
+
+    const ids =
+        [
+            ...new Set(
+                products
+                .map(
+                    p =>
+                    String(
+                        p.CategoryID || ""
+                    ).trim()
+                )
+                .filter(Boolean)
+            )
+        ];
+
+
+    const box =
+        document.getElementById("cats");
+
+
+    box.innerHTML = "";
+
+
+    const all =
+        document.createElement("button");
+
+
+    all.className =
+        "cat " +
+        (
+            cat === "ALL"
+            ? "active"
+            : ""
+        );
+
+
+    all.textContent =
+        "ทั้งหมด";
+
+
+    all.onclick =
+        () => setCat("ALL");
+
+
+    box.appendChild(all);
+
+
+    ids.forEach(x => {
+
+        const b =
+            document.createElement("button");
+
+
+        b.className =
+            "cat " +
+            (
+                cat === x
+                ? "active"
+                : ""
+            );
+
+
+        b.textContent = getCategoryName(x);
+
+
+        b.onclick =
+            () => setCat(x);
+
+
+        box.appendChild(b);
+
+    });
+
+
+}
+
+
+function setCat(x){
+
+    cat = x;
+
+    buildCats();
+
+    render();
+
+}
+
+
+/* ================= RENDER PRODUCTS ================= */
+
+function render(){
+
+    const q =
+        document.getElementById(
+            "search"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const grouped = {};
+
+
+    products.forEach(p => {
+
+        const id =
+            String(
+                p.ProductID || ""
+            ).trim();
+
+
+        if(!id) return;
+
+
+        if(!grouped[id]){
+
+            grouped[id] = [];
+
+        }
+
+
+        grouped[id].push(p);
+
+    });
+
+
+    const list =
+        Object.values(grouped)
+
+        .map(vs => vs[0])
+
+        .filter(p => {
+
+            return (
+
+                cat === "ALL" ||
+                String(p.CategoryID) === cat
+
+            )
+
+            &&
+
+            [
+                p.ProductName,
+                p.ProductID,
+                p.Description,
+                p.CategoryID,
+            getCategoryName(p.CategoryID)
+                ]
+
+            .join(" ")
+            .toLowerCase()
+            .includes(q);
+
+        });
+
+
+    const grid =
+        document.getElementById(
+            "grid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    document.getElementById(
+        "empty"
+    ).style.display =
+        list.length
+        ? "none"
+        : "block";
+
+
+    list.forEach(p => {
+
+        const variants =
+            grouped[
+                String(
+                    p.ProductID || ""
+                ).trim()
+            ] || [];
+
+
+        const available =
+            variants.filter(
+                v =>
+                Number(v.Stock || 0) > 0
+            );
+
+
+        const prices =
+            available
+
+            .map(
+                v =>
+                Number(v.Price || 0)
+            )
+
+            .filter(
+                v => v > 0
+            );
+
+
+        const minPrice =
+            prices.length
+            ? Math.min(...prices)
+            : Number(p.Price || 0);
+
+
+        const totalStock =
+            available.reduce(
+                (sum,v) =>
+                    sum +
+                    Number(v.Stock || 0),
+                0
+            );
+
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "card";
+
+
+        card.innerHTML =
+
+            (
+
+                p.ImageURL
+
+                ?
+
+                `
+                <img
+                    class="pic"
+                    src="${esc(getDisplayImageUrl(p.ImageURL))}"
+                    alt="${esc(p.ProductName)}"
+                    onerror="
+                        this.outerHTML=
+                        '<div class=nop>🍽️</div>'
+                    "
+                >
+                `
+
+                :
+
+                `
+                <div class="nop">
+                    🍽️
+                </div>
+                `
+
+            )
+
+            +
+
+            `
+
+            <div class="body">
+
+                <div class="name">
+                    ${esc(p.ProductName)}
+                </div>
+
+                <div class="desc">
+                    ${esc(p.Description || "")}
+                </div>
+
+                <div>
+                    ขนาด:
+                    <b>S / M / L</b>
+                </div>
+
+                <div class="price">
+
+                    ${
+                        prices.length
+
+                        ?
+
+                        "เริ่มต้น ฿" +
+                        minPrice.toFixed(2)
+
+                        :
+
+                        "สินค้าหมด"
+                    }
+
+                </div>
+
+                <div
+                    class="
+                        stock
+                        ${
+                            totalStock <= 5
+                            ? "low"
+                            : ""
+                        }
+                    "
+                >
+
+                    ${
+                        totalStock
+                        ?
+                        "มีสินค้า " +
+                        totalStock +
+                        " ชิ้น"
+                        :
+                        "สินค้าหมด"
+                    }
+
+                </div>
+
+            </div>
+
+            `;
+
+
+        const b =
+            document.createElement(
+                "button"
+            );
+
+
+        b.className =
+            "add";
+
+
+        b.textContent =
+            available.length
+            ? "+ เพิ่ม"
+            : "สินค้าหมด";
+
+
+        b.disabled =
+            !available.length;
+
+
+        b.onclick =
+            () =>
+            openModal(
+                p.ProductID
+            );
+
+
+        card
+            .querySelector(".body")
+            .appendChild(b);
+
+
+        grid.appendChild(card);
+
+    });
+
+}
+
+
+/* ================= SIZE MODAL ================= */
+
+function openModal(id){
+
+    const vs =
+        products.filter(
+            p =>
+            String(p.ProductID) ===
+            String(id)
+        );
+
+
+    picked = vs[0];
+
+
+    size =
+        String(
+            picked.Size || "S"
+        )
+        .toUpperCase();
+
+
+    qtyValue = 1;
+
+
+    document.getElementById(
+        "mname"
+    ).textContent =
+        picked.ProductName ||
+        "สินค้า";
+
+
+    document.getElementById(
+        "mdesc"
+    ).textContent =
+        picked.Description ||
+        "";
+
+
+    document.getElementById(
+        "note"
+    ).value = "";
+
+
+    drawSizes(vs);
+
+    updateModal();
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
+
+}
+
+
+function drawSizes(vs){
+
+    document.getElementById(
+        "sizes"
+    ).innerHTML =
+
+        ["S","M","L"]
+
+        .map(s => {
+
+            const p =
+                vs.find(
+                    x =>
+                    String(
+                        x.Size || ""
+                    )
+                    .toUpperCase() === s
+                );
+
+
+            const disabled =
+                !p ||
+                !(Number(p.Stock) > 0);
+
+
+            return `
+
+                <button
+                    ${
+                        disabled
+                        ? "disabled"
+                        : ""
+                    }
+
+                    class="
+                        ${
+                            p &&
+                            s === size
+                            ? "sel"
+                            : ""
+                        }
+                    "
+
+                    onclick="
+                        choose('${s}')
+                    "
+                >
+
+                    ${s}
+
+                    <br>
+
+                    ฿${
+                        p
+                        ? Number(
+                            p.Price || 0
+                          ).toFixed(2)
+                        : "-"
+                    }
+
+                </button>
+
+            `;
+
+        })
+
+        .join("");
+
+}
+
+
+function choose(s){
+
+    const p =
+        products.find(
+            x =>
+
+            String(
+                x.ProductID
+            ) ===
+            String(
+                picked.ProductID
+            )
+
+            &&
+
+            String(
+                x.Size || ""
+            )
+            .toUpperCase() === s
+
+        );
+
+
+    if(
+        !p ||
+        !(Number(p.Stock) > 0)
+    ){
+
+        return;
+
+    }
+
+
+    size = s;
+
+    picked = p;
+
+    qtyValue = 1;
+
+
+    drawSizes(
+        products.filter(
+            x =>
+            String(
+                x.ProductID
+            ) ===
+            String(
+                picked.ProductID
+            )
+        )
+    );
+
+
+    updateModal();
+
+}
+
+
+function qty(n){
+
+    if(!picked) return;
+
+
+    qtyValue =
+        Math.max(
+            1,
+
+            Math.min(
+                Number(
+                    picked.Stock
+                ) || 1,
+
+                qtyValue + n
+            )
+        );
+
+
+    updateModal();
+
+}
+
+
+function updateModal(){
+
+    document.getElementById(
+        "qty"
+    ).textContent =
+        qtyValue;
+
+
+    document.getElementById(
+        "mtotal"
+    ).textContent =
+        "฿" +
+
+        (
+            Number(
+                picked?.Price || 0
+            )
+
+            *
+
+            qtyValue
+
+        ).toFixed(2);
+
+
+    document.getElementById(
+        "add"
+    ).disabled =
+        !picked ||
+        !(Number(picked.Stock) > 0);
+
+}
+
+
+function closeModal(){
+
+    document.getElementById(
+        "modal"
+    )
+    .classList
+    .remove("show");
+
+}
+
+
+/* ================= CART ================= */
+
+function addCart(){
+
+    if(!picked) return;
+
+
+    const item = {
+
+        ProductID:
+            String(
+                picked.ProductID || ""
+            ),
+
+        ProductName:
+            String(
+                picked.ProductName || ""
+            ),
+
+        Size:
+            String(
+                picked.Size ||
+                size ||
+                ""
+            ),
+
+        Weight:
+            picked.Weight || "",
+
+        Price:
+            Number(
+                picked.Price || 0
+            ),
+
+        ImageURL:
+            String(
+                picked.ImageURL || ""
+            ),
+
+        Quantity:
+            qtyValue,
+
+        Stock:
+            Number(
+                picked.Stock || 0
+            ),
+
+        Note:
+            document.getElementById(
+                "note"
+            )
+            .value
+            .trim()
+
+    };
+
+
+    const old =
+        cart.find(
+            x =>
+            x.ProductID ===
+            item.ProductID
+
+            &&
+
+            x.Size ===
+            item.Size
+
+            &&
+
+            x.Note ===
+            item.Note
+        );
+
+
+    if(old){
+
+        old.Quantity +=
+            item.Quantity;
+
+    }else{
+
+        cart.push(item);
+
+    }
+
+
+    saveCart();
+
+    updateCart();
+
+    closeModal();
+
+
+    alert(
+        "เพิ่มสินค้าในตะกร้าแล้ว"
+    );
+
+}
+
+
+/* ================= LOAD CART ================= */
+
+function loadCart(){
+
+    try{
+
+        cart =
+            JSON.parse(
+                localStorage.getItem(
+                    "foodCart"
+                ) || "[]"
+            );
+
+    }catch(e){
+
+        cart = [];
+
+    }
+
+
+    if(
+        !Array.isArray(cart)
+    ){
+
+        cart = [];
+
+    }
+
+
+    updateCart();
+
+}
+
+
+function saveCart(){
+
+    localStorage.setItem(
+        "foodCart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+function updateCart(){
+
+    document.getElementById(
+        "count"
+    ).textContent =
+
+        cart.reduce(
+            (s,x) =>
+            s +
+            Number(
+                x.Quantity || 0
+            ),
+            0
+        );
+
+
+    const box =
+        document.getElementById(
+            "items"
+        );
+
+
+    box.innerHTML =
+
+        cart.length
+
+        ?
+
+        cart.map(
+            (x,i) => `
+
+                <div class="item">
+
+                    <div class="itemtop">
+
+                        <div>
+
+                            <b>
+                                ${esc(
+                                    x.ProductName
+                                )}
+                            </b>
+
+                            <div class="sub">
+
+                                ขนาด
+                                ${esc(
+                                    x.Size
+                                )}
+
+                                ×
+
+                                ${x.Quantity}
+
+                            </div>
+
+                            ${
+                                x.Note
+
+                                ?
+
+                                `
+                                <div class="sub">
+                                    หมายเหตุ:
+                                    ${esc(x.Note)}
+                                </div>
+                                `
+
+                                :
+
+                                ""
+                            }
+
+                        </div>
+
+
+                        <b>
+
+                            ฿${(
+                                Number(
+                                    x.Price || 0
+                                )
+
+                                *
+
+                                Number(
+                                    x.Quantity || 0
+                                )
+
+                            ).toFixed(2)}
+
+                        </b>
+
+                    </div>
+
+
+                    <button
+                        class="remove"
+                        onclick="
+                            removeItem(${i})
+                        "
+                    >
+                        ลบ
+                    </button>
+
+                </div>
+
+            `
+        ).join("")
+
+        :
+
+        `
+        <div class="empty">
+            ยังไม่มีสินค้าในตะกร้า
+        </div>
+        `;
+
+
+    document.getElementById(
+        "ctotal"
+    ).textContent =
+
+        "฿" +
+
+        cart.reduce(
+            (s,x) =>
+
+            s +
+
+            Number(
+                x.Price || 0
+            )
+
+            *
+
+            Number(
+                x.Quantity || 0
+            ),
+
+            0
+
+        ).toFixed(2);
+
+}
+
+
+function removeItem(i){
+
+    cart.splice(i,1);
+
+    saveCart();
+
+    updateCart();
+
+}
+
+
+/* ================= CART ================= */
+
+function openCart(){
+
+    updateCart();
+
+    document.getElementById(
+        "drawer"
+    )
+    .classList
+    .add("show");
+
+}
+
+
+function closeCart(){
+
+    document.getElementById(
+        "drawer"
+    )
+    .classList
+    .remove("show");
+
+}
+
+
+/* ================= ORDER SUMMARY ================= */
+
+function summary(){
+
+    if(!cart.length){
+
+        alert(
+            "กรุณาเพิ่มสินค้าก่อน"
+        );
+
+        return;
+
+    }
+
+
+    location.href =
+        "OrderSummary.html";
+
+}
+
+
+/* ================= TRACKING ================= */
+
+function goTracking(){
+
+    location.href =
+        "OrderTracking.html";
+
+}
+
+
+/* ================= LOGOUT ================= */
+
+function logout(){
+
+    if(!confirm("ต้องการออกจากระบบหรือไม่?")){
+        return;
+    }
+
+    sessionStorage.removeItem("loginToken");
+    sessionStorage.removeItem("currentUser");
+
+    localStorage.removeItem("loginToken");
+    localStorage.removeItem("currentUser");
+
+    localStorage.removeItem("foodCart");
+
+    location.href =
+        "Users.html";
+
+}
+
+
+/* ================= ESCAPE ================= */
+
+function esc(v){
+
+    return String(
+        v ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - ร้านอิ่มอร่อย</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, "Tahoma", sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        /* =========================
+           Header
+        ========================= */
+
+        .header {
+            background: #e53935;
+            color: white;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-name {
+            font-size: 15px;
+        }
+
+        .logout-btn {
+            border: none;
+            background: white;
+            color: #e53935;
+
+            padding: 8px 15px;
+            border-radius: 6px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background: #eeeeee;
+        }
+
+
+        /* =========================
+           Layout
+        ========================= */
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+
+
+        /* =========================
+           Sidebar
+        ========================= */
+
+        .sidebar {
+            width: 240px;
+            background: white;
+
+            border-right: 1px solid #ddd;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .menu-btn {
+            width: 100%;
+
+            border: none;
+            background: white;
+
+            padding: 13px;
+            margin-bottom: 8px;
+
+            text-align: left;
+            border-radius: 7px;
+
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .menu-btn:hover {
+            background: #fce4e4;
+        }
+
+        .menu-btn.active {
+            background: #e53935;
+            color: white;
+        }
+
+
+        /* =========================
+           Main
+        ========================= */
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .welcome {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+
+        /* =========================
+           Cards
+        ========================= */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card-title {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .card-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           Quick Menu
+        ========================= */
+
+        .section {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        .quick-menu {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+
+            gap: 15px;
+        }
+
+        .quick-btn {
+            border: 1px solid #ddd;
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+        }
+
+        .quick-btn:hover {
+            background: #fce4e4;
+        }
+
+
+        /* =========================
+           Loading
+        ========================= */
+
+        #loading {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            background: rgba(255,255,255,0.95);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 9999;
+
+            font-size: 20px;
+        }
+
+
+        /* =========================
+           Mobile
+        ========================= */
+
+        @media (max-width: 768px) {
+
+            .header {
+                padding: 15px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .admin-name {
+                display: none;
+            }
+
+            .container {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .sidebar h3 {
+                display: none;
+            }
+
+            .main {
+                padding: 20px 15px;
+            }
+
+            .page-title {
+                font-size: 23px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     Loading
+========================= -->
+
+<div id="loading">
+    กำลังตรวจสอบสิทธิ์...
+</div>
+
+
+<!-- =========================
+     Header
+========================= -->
+
+<header class="header">
+
+    <div class="logo">
+        🍔 ร้านอิ่มอร่อย
+    </div>
+
+    <div class="admin-info">
+
+        <span class="admin-name" id="adminName">
+            Admin
+        </span>
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+
+            ออกจากระบบ
+
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================
+     Layout
+========================= -->
+
+<div class="container">
+
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <h3>เมนูผู้ดูแลระบบ</h3>
+
+
+        <button
+            class="menu-btn active"
+            onclick="showDashboard()">
+
+            📊 Dashboard
+
+        </button>
+
+
+        <button
+            class="menu-btn"
+            onclick="goProducts()">
+
+            🍔 จัดการสินค้า
+
+        </button>
+
+
+        <button
+            class="menu-btn"
+            onclick="goOrders()">
+
+            🛒 จัดการคำสั่งซื้อ
+
+        </button>
+
+
+        <button
+            class="menu-btn"
+            onclick="goStock()">
+
+            📦 จัดการสต็อก
+
+        </button>
+
+
+        <button
+            id="ownerUsersMenu"
+            class="menu-btn"
+            style="display:none"
+            onclick="goUsers()">
+
+            👥 จัดการสมาชิก
+
+        </button>
+
+
+    </aside>
+
+
+    <!-- Main -->
+
+    <main class="main">
+
+
+        <h1 class="page-title">
+            Dashboard
+        </h1>
+
+
+        <p class="welcome">
+
+            ยินดีต้อนรับผู้ดูแลระบบ
+            <span id="welcomeName"></span>
+
+        </p>
+
+
+        <!-- Cards -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    สินค้าทั้งหมด
+                </div>
+
+                <div
+                    class="card-number"
+                    id="productCount">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    คำสั่งซื้อ
+                </div>
+
+                <div
+                    class="card-number"
+                    id="orderCount">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    สมาชิก
+                </div>
+
+                <div
+                    class="card-number"
+                    id="userCount">
+
+                    -
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-title">
+                    สถานะระบบ
+                </div>
+
+                <div
+                    class="card-number">
+
+                    🟢
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- Quick Menu -->
+
+        <section class="section">
+
+            <h2>
+                เมนูจัดการระบบ
+            </h2>
+
+
+            <div class="quick-menu">
+
+
+                <button
+                    class="quick-btn"
+                    onclick="goProducts()">
+
+                    🍔<br><br>
+                    จัดการสินค้า
+
+                </button>
+
+
+                <button
+                    class="quick-btn"
+                    onclick="goOrders()">
+
+                    🛒<br><br>
+                    จัดการคำสั่งซื้อ
+
+                </button>
+
+
+                <button
+                    class="quick-btn"
+                    onclick="goStock()">
+
+                    📦<br><br>
+                    จัดการสต็อก
+
+                </button>
+
+                <button
+                    class="quick-btn"
+                    onclick="goSalesReport()">
+
+                    📦<br><br>
+                    รายงานยอดขาย
+
+                </button>
+
+
+                <button
+                    id="ownerUsersQuick"
+                    class="quick-btn"
+                    style="display:none"
+                    onclick="goUsers()">
+
+                    👥<br><br>
+                    จัดการสมาชิก
+
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+/* ==========================================
+   Google Apps Script API
+========================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+
+/* ==========================================
+   ตรวจสอบสิทธิ์ Admin
+========================================== */
+
+async function checkAdminAccess() {
+
+    let token =
+        sessionStorage.getItem("loginToken") ||
+        localStorage.getItem("loginToken");
+
+
+    /* ไม่มี Token */
+
+    if (!token) {
+
+        alert("กรุณาเข้าสู่ระบบก่อน");
+
+        window.location.href = "Users.html";
+
+        return;
+
+    }
+
+
+    try {
+
+
+        const response = await fetch(API_URL, {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "text/plain;charset=utf-8"
+
+            },
+
+            body: JSON.stringify({
+
+                action: "checkAdmin",
+
+                token: token
+
+            })
+
+        });
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Admin Check:",
+            result
+        );
+
+
+        /* ไม่มีสิทธิ์ */
+
+        if (!result.success) {
+
+            alert(
+                result.message ||
+                "คุณไม่มีสิทธิ์เข้าใช้งาน"
+            );
+
+
+            sessionStorage.removeItem(
+                "loginToken"
+            );
+
+            sessionStorage.removeItem(
+                "currentUser"
+            );
+
+            localStorage.removeItem(
+                "loginToken"
+            );
+
+            localStorage.removeItem(
+                "currentUser"
+            );
+
+
+            window.location.href =
+                "Menu.html";
+
+            return;
+
+        }
+
+
+        /* ==================================
+           ผ่านการตรวจสอบ
+        ================================== */
+
+        const user =
+            result.user;
+
+
+        if (user) {
+            if (String(user.Role || "").trim().toLowerCase() === "owner") {
+                const ownerMenu = document.getElementById("ownerUsersMenu");
+                const ownerQuick = document.getElementById("ownerUsersQuick");
+                if (ownerMenu) ownerMenu.style.display = "block";
+                if (ownerQuick) ownerQuick.style.display = "block";
+            }
+
+            document.getElementById(
+                "adminName"
+            ).textContent =
+                user.Name;
+
+
+            document.getElementById(
+                "welcomeName"
+            ).textContent =
+                user.Name;
+
+        }
+
+
+        /* ซ่อน Loading */
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        console.log(
+            "Admin Access Granted"
+        );
+
+
+    } catch (error) {
+
+
+        console.error(error);
+
+
+        alert(
+            "ไม่สามารถตรวจสอบสิทธิ์ได้"
+        );
+
+
+        window.location.href =
+            "Users.html";
+
+    }
+
+}
+
+
+/* ==========================================
+   Logout
+========================================== */
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "loginToken"
+    );
+
+    sessionStorage.removeItem(
+        "currentUser"
+    );
+
+
+    localStorage.removeItem(
+        "loginToken"
+    );
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+
+    window.location.href =
+        "Users.html";
+
+}
+
+
+/* ==========================================
+   เมนูต่าง ๆ
+========================================== */
+
+function showDashboard() {
+
+    window.location.href =
+        "AdminDashboard.html";
+
+}
+
+
+function goProducts() {
+
+    alert(
+        "หน้านี้เราจะสร้างต่อเป็น Products.html"
+    );
+
+}
+
+
+function goUsers() {
+    window.location.href = "AdminUsers.html";
+}
+
+function goOrders() {
+    window.location.href = "OrdersAdmin.html";
+}
+
+
+function goStock() {
+    window.location.href = "Stock.html";
+    
+}
+
+function goSalesReport() {
+    window.location.href = "SalesReport.html";
+    
+}
+
+
+function goProducts() {
+  window.location.href = "Products.html";
+}
+
+
+/* ==========================================
+   เริ่มตรวจสอบ
+========================================== */
+
+checkAdminAccess();
+
+</script>
+
+
+</body>
+
+</html>

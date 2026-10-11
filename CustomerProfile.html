@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>โปรไฟล์ลูกค้า | ร้านอิ่มอร่อย</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Tahoma, sans-serif;
+    background: #f7f7f7;
+    color: #333;
+}
+
+header {
+    background: #e53935;
+    color: white;
+    padding: 16px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+button, .btn {
+    padding: 11px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-light {
+    background: white;
+    color: #e53935;
+}
+
+.btn-dark {
+    background: #333;
+    color: white;
+}
+
+main {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+h1 {
+    font-size: 27px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 22px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px #0000000d;
+}
+
+.profile-heading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #ffebe8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.profile-heading h2 {
+    margin: 0 0 5px;
+    font-size: 20px;
+}
+
+.profile-heading p {
+    margin: 0;
+    color: #777;
+}
+
+label {
+    display: block;
+    margin: 18px 0 7px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+input[readonly] {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.help {
+    font-size: 12px;
+    color: #777;
+    margin-top: 6px;
+}
+
+.message {
+    display: none;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.5;
+}
+
+.success {
+    display: block;
+    background: #e1f6e9;
+    color: #17663a;
+}
+
+.error {
+    display: block;
+    background: #ffebeb;
+    color: #a32020;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.save {
+    background: #e53935;
+    color: white;
+    font-weight: bold;
+}
+
+.save:disabled {
+    opacity: 0.6;
+}
+
+.note {
+    margin-top: 18px;
+    color: #777;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 500px) {
+    header {
+        padding: 12px;
+    }
+
+    .logo {
+        font-size: 18px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+
+    h1 {
+        font-size: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🍔 ร้านอิ่มอร่อย</div>
+
+    <nav>
+        <a class="btn btn-light" href="Menu.html">
+            กลับไปหน้าเมนู
+        </a>
+
+        <button class="btn-dark" onclick="logout()">
+            ออกจากระบบ
+        </button>
+    </nav>
+</header>
+
+<main>
+    <h1>👤 จัดการโปรไฟล์</h1>
+    <p class="subtitle">
+        ตรวจสอบและแก้ไขข้อมูลบัญชีลูกค้าของคุณ
+    </p>
+
+    <section class="card">
+        <div class="profile-heading">
+            <div class="avatar">👤</div>
+            <div>
+                <h2 id="displayName">โปรไฟล์ของฉัน</h2>
+                <p>ข้อมูลบัญชีร้านอิ่มอร่อย</p>
+            </div>
+        </div>
+
+        <form id="profileForm">
+
+            <label for="userID">รหัสสมาชิก</label>
+            <input id="userID" type="text" readonly>
+
+            <div class="help">
+                รหัสสมาชิกไม่สามารถแก้ไขได้
+            </div>
+
+            <label for="name">ชื่อ-นามสกุล *</label>
+            <input
+                id="name"
+                type="text"
+                maxlength="100"
+                required
+                placeholder="กรอกชื่อ-นามสกุล"
+            >
+
+            <label for="email">อีเมล</label>
+            <input id="email" type="email" readonly>
+
+            <div class="help">
+                อีเมลแสดงอย่างเดียวในเวอร์ชันนี้
+            </div>
+
+            <div id="message" class="message" role="status"></div>
+
+            <div class="actions">
+                <button id="saveButton" class="save" type="submit">
+                    บันทึกข้อมูล
+                </button>
+
+                <button
+                    class="btn-dark"
+                    type="button"
+                    onclick="loadProfile()"
+                >
+                    คืนค่าข้อมูลเดิม
+                </button>
+            </div>
+        </form>
+
+        <div class="note">
+            หน้านี้จะไม่แสดงรหัสผ่านหรือ PasswordHash ของลูกค้า
+        </div>
+    </section>
+</main>
+
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+function getToken() {
+    return sessionStorage.getItem("loginToken") ||
+           localStorage.getItem("loginToken");
+}
+
+function getCurrentUser() {
+    try {
+        return JSON.parse(
+            sessionStorage.getItem("currentUser") ||
+            localStorage.getItem("currentUser") ||
+            "null"
+        );
+    } catch (error) {
+        return null;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (!getToken()) {
+        location.href = "Users.html";
+        return;
+    }
+
+    loadProfile();
+});
+
+function loadProfile() {
+    const user = getCurrentUser();
+
+    if (!user) {
+        showMessage(
+            "ไม่พบข้อมูลบัญชี กรุณาเข้าสู่ระบบใหม่",
+            "error"
+        );
+        return;
+    }
+
+    document.getElementById("userID").value =
+        user.UserID || "-";
+
+    document.getElementById("name").value =
+        user.Name || "";
+
+    document.getElementById("email").value =
+        user.Email || "";
+
+    document.getElementById("displayName").textContent =
+        user.Name || "โปรไฟล์ของฉัน";
+
+    showMessage("", "");
+}
+
+document.getElementById("profileForm")
+.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const token = getToken();
+    const name = document.getElementById("name")
+        .value.trim();
+
+    if (!token) {
+        showMessage(
+            "กรุณาเข้าสู่ระบบใหม่",
+            "error"
+        );
+        return;
+    }
+
+    if (!name) {
+        showMessage(
+            "กรุณากรอกชื่อ-นามสกุล",
+            "error"
+        );
+        return;
+    }
+
+    const button = document.getElementById("saveButton");
+
+    button.disabled = true;
+    button.textContent = "กำลังบันทึก...";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                action: "updateCustomerProfile",
+                token: token,
+                name: name
+            })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showMessage(
+                result.message || "บันทึกข้อมูลไม่สำเร็จ",
+                "error"
+            );
+            return;
+        }
+
+        const user = Object.assign(
+            {},
+            getCurrentUser() || {},
+            result.user || {},
+            { Name: name }
+        );
+
+        const storage = sessionStorage.getItem("loginToken")
+            ? sessionStorage
+            : localStorage;
+
+        storage.setItem("currentUser", JSON.stringify(user));
+
+        document.getElementById("displayName").textContent =
+            name;
+
+        showMessage(
+            "บันทึกโปรไฟล์สำเร็จ",
+            "success"
+        );
+
+    } catch (error) {
+        console.error(error);
+
+        showMessage(
+            "เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "บันทึกข้อมูล";
+    }
+});
+
+function showMessage(text, type) {
+    const box = document.getElementById("message");
+
+    box.textContent = text;
+    box.className = "message";
+
+    if (text) {
+        box.classList.add(type);
+    }
+}
+
+function logout() {
+    if (!confirm("ต้องการออกจากระบบหรือไม่?")) {
+        return;
+    }
+
+    sessionStorage.removeItem("loginToken");
+    sessionStorage.removeItem("currentUser");
+    localStorage.removeItem("loginToken");
+    localStorage.removeItem("currentUser");
+
+    location.href = "Users.html";
+}
+</script>
+
+</body>
+</html>

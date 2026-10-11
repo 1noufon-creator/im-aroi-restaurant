@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>สมัครสมาชิก | ร้านอิ่มอร่อย</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Tahoma,
+                sans-serif;
+
+            background: #ffffff;
+
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        .page {
+
+            min-height: 100vh;
+
+            padding:
+                25px
+                20px
+                40px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .header {
+
+            text-align: center;
+
+            margin:
+                20px
+                auto
+                40px;
+        }
+
+
+        .logo {
+
+            font-size: 80px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .shop-name {
+
+            font-size: 42px;
+
+            font-weight: 700;
+
+            color: #111111;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subtitle {
+
+            font-size: 20px;
+
+            color: #777777;
+        }
+
+
+        .register-card {
+
+            width: 100%;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            background: #ffffff;
+
+            border-radius: 30px;
+
+            padding:
+                45px
+                55px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.08);
+        }
+
+
+        .user-icon {
+
+            width: 78px;
+
+            height: 78px;
+
+            background: #e4f7ef;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin:
+                0
+                auto
+                18px;
+
+            font-size: 40px;
+        }
+
+
+        .register-title {
+
+            text-align: center;
+
+            font-size: 35px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .message {
+
+            display: none;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .message.error {
+
+            display: block;
+
+            background: #fff0f0;
+
+            color: #c62828;
+        }
+
+
+        .message.success {
+
+            display: block;
+
+            background: #edfff6;
+
+            color: #087f50;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 20px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            font-size: 19px;
+
+            font-weight: 600;
+
+            margin-bottom: 9px;
+        }
+
+
+        .input-box {
+
+            position: relative;
+        }
+
+
+        .input-box input {
+
+            width: 100%;
+
+            height: 62px;
+
+            border:
+                2px solid
+                #d9dee7;
+
+            border-radius: 15px;
+
+            padding:
+                0
+                55px;
+
+            font-size: 18px;
+
+            outline: none;
+        }
+
+
+        .input-box input:focus {
+
+            border-color: #00a86b;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 168, 107, 0.08);
+        }
+
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            font-size: 23px;
+        }
+
+
+        .show-password {
+
+            position: absolute;
+
+            right: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            font-size: 21px;
+        }
+
+
+        .password-info {
+
+            margin-top: 7px;
+
+            color: #777777;
+
+            font-size: 14px;
+        }
+
+
+        .register-button {
+
+            width: 100%;
+
+            height: 64px;
+
+            border: none;
+
+            border-radius: 16px;
+
+            background: #00a86b;
+
+            color: white;
+
+            font-size: 22px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .register-button:hover {
+
+            background: #008f5a;
+        }
+
+
+        .register-button:disabled {
+
+            background: #86cdb1;
+
+            cursor: wait;
+        }
+
+
+        .login-link {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            color: #00a86b;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .login-link:hover {
+
+            text-decoration: underline;
+        }
+
+
+        @media (max-width: 768px) {
+
+            .page {
+
+                padding:
+                    15px
+                    15px
+                    30px;
+            }
+
+
+            .shop-name {
+
+                font-size: 34px;
+            }
+
+
+            .subtitle {
+
+                font-size: 18px;
+            }
+
+
+            .register-card {
+
+                padding:
+                    32px
+                    24px;
+            }
+
+
+            .register-title {
+
+                font-size: 29px;
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .shop-name {
+
+                font-size: 29px;
+            }
+
+
+            .register-card {
+
+                padding:
+                    28px
+                    18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="page">
+
+
+        <section class="header">
+
+            <div class="logo">
+                🍔
+            </div>
+
+
+            <div class="shop-name">
+                ร้านอิ่มอร่อย
+            </div>
+
+
+            <div class="subtitle">
+                อร่อยง่าย สั่งได้ทุกที่
+            </div>
+
+        </section>
+
+
+
+        <section class="register-card">
+
+
+            <div class="user-icon">
+                👤
+            </div>
+
+
+            <h1 class="register-title">
+                สมัครสมาชิก
+            </h1>
+
+
+            <div
+                id="messageBox"
+                class="message"
+            ></div>
+
+
+            <form id="registerForm">
+
+
+                <!-- ชื่อ -->
+
+                <div class="form-group">
+
+                    <label>
+                        ชื่อ-นามสกุล
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            👤
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="กรอกชื่อ-นามสกุล"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Email -->
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="กรอกอีเมล"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Password -->
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="กรอกรหัสผ่าน"
+                            minlength="6"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+
+                    <div class="password-info">
+
+                        รหัสผ่านต้องมีอย่างน้อย
+                        6 ตัวอักษร
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ยืนยัน Password -->
+
+                <div class="form-group">
+
+                    <label>
+                        ยืนยัน Password
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="กรอกรหัสผ่านอีกครั้ง"
+                            minlength="6"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showConfirmPassword"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="register-button"
+                    id="registerButton"
+                >
+                    สมัครสมาชิก
+                </button>
+
+
+            </form>
+
+
+
+            <a
+                href="Users.html"
+                class="login-link"
+            >
+                มีบัญชีอยู่แล้ว? เข้าสู่ระบบ
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <script>
+
+        // =================================================
+        // Google Apps Script URL
+        // =================================================
+
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+
+        // =================================================
+        // แสดง / ซ่อน Password
+        // =================================================
+
+        document
+            .getElementById("showPassword")
+            .addEventListener(
+                "click",
+                function () { 
+
+                    const password =
+                        document.getElementById(
+                            "password"
+                        );
+
+
+                    if (
+                        password.type ===
+                        "password"
+                    ) {
+
+                        password.type =
+                            "text";
+
+                        this.textContent =
+                            "🙈";
+
+                    } else {
+
+                        password.type =
+                            "password";
+
+                        this.textContent =
+                            "👁";
+
+                    }
+
+                }
+            );
+
+
+        // =================================================
+        // แสดง / ซ่อน Confirm Password
+        // =================================================
+
+        document
+            .getElementById(
+                "showConfirmPassword"
+            )
+            .addEventListener(
+                "click",
+                function () {
+
+                    const password =
+                        document.getElementById(
+                            "confirmPassword"
+                        );
+
+
+                    if (
+                        password.type ===
+                        "password"
+                    ) {
+
+                        password.type =
+                            "text";
+
+                        this.textContent =
+                            "🙈";
+
+                    } else {
+
+                        password.type =
+                            "password";
+
+                        this.textContent =
+                            "👁";
+
+                    }
+
+                }
+            );
+
+
+        // =================================================
+        // แสดงข้อความ
+        // =================================================
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            const box =
+                document.getElementById(
+                    "messageBox"
+                );
+
+
+            box.textContent =
+                message;
+
+
+            box.className =
+                "message " + type;
+
+        }
+
+
+        // =================================================
+        // สมัครสมาชิก
+        // =================================================
+
+        document
+            .getElementById("registerForm")
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const name =
+                        document
+                            .getElementById(
+                                "name"
+                            )
+                            .value
+                            .trim();
+
+
+                    const email =
+                        document
+                            .getElementById(
+                                "email"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const password =
+                        document
+                            .getElementById(
+                                "password"
+                            )
+                            .value;
+
+
+                    const confirmPassword =
+                        document
+                            .getElementById(
+                                "confirmPassword"
+                            )
+                            .value;
+
+
+                    const registerButton =
+                        document
+                            .getElementById(
+                                "registerButton"
+                            );
+
+
+                    // =================================================
+                    // ตรวจสอบข้อมูล
+                    // =================================================
+
+                    if (!name) {
+
+                        showMessage(
+                            "กรุณากรอกชื่อ-นามสกุล",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (!email) {
+
+                        showMessage(
+                            "กรุณากรอก Email",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        password.length < 6
+                    ) {
+
+                        showMessage(
+                            "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        password !==
+                        confirmPassword
+                    ) {
+
+                        showMessage(
+                            "Password ไม่ตรงกัน",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    // =================================================
+                    // ปิดปุ่ม
+                    // =================================================
+
+                    registerButton.disabled =
+                        true;
+
+
+                    registerButton.textContent =
+                        "กำลังสมัครสมาชิก...";
+
+
+                    try {
+
+                        // =================================================
+                        // ส่งข้อมูลไป Apps Script
+                        // =================================================
+
+                        const response =
+                            await fetch(
+                                API_URL,
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    redirect:
+                                        "follow",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "text/plain;charset=utf-8"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            action:
+                                                "register",
+
+                                            name:
+                                                name,
+
+                                            email:
+                                                email,
+
+                                            password:
+                                                password
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        // =================================================
+                        // สมัครไม่สำเร็จ
+                        // =================================================
+
+                        if (
+                            !result.success
+                        ) {
+
+                            showMessage(
+                                result.message ||
+                                "สมัครสมาชิกไม่สำเร็จ",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // =================================================
+                        // สมัครสำเร็จ
+                        // =================================================
+
+                        showMessage(
+                            "สมัครสมาชิกสำเร็จ กำลังกลับไปหน้าเข้าสู่ระบบ...",
+                            "success"
+                        );
+
+
+                        document
+                            .getElementById(
+                                "registerForm"
+                            )
+                            .reset();
+
+
+                        // =================================================
+                        // กลับหน้า Login
+                        // =================================================
+
+                        setTimeout(
+                            function () {
+
+                                window.location.href =
+                                    "Users.html";
+
+                            },
+                            1500
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        showMessage(
+                            "ไม่สามารถเชื่อมต่อ Google Sheets ได้ กรุณาตรวจสอบ URL ของ Google Apps Script",
+                            "error"
+                        );
+
+
+                    } finally {
+
+                        registerButton.disabled =
+                            false;
+
+                        registerButton.textContent =
+                            "สมัครสมาชิก";
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

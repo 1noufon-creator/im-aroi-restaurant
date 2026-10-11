@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ประวัติคำสั่งซื้อ | ร้านอิ่มอร่อย</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Tahoma,sans-serif;background:#f7f7f7;color:#222}
+header{background:#e53935;color:#fff;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-size:21px;font-weight:bold}nav{display:flex;gap:8px;flex-wrap:wrap}
+button,a.btn{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;font-size:14px;text-decoration:none;display:inline-block}
+.btn-light{background:#fff;color:#e53935;font-weight:bold}.btn-dark{background:#222;color:#fff}
+main{max-width:1000px;margin:0 auto;padding:22px 15px}h1{margin:0 0 6px;font-size:28px}.sub{color:#777;margin-bottom:20px}
+.message{background:#fff;padding:24px;border-radius:12px;text-align:center;color:#777}
+.order-card{background:#fff;border-radius:13px;padding:18px;margin:0 0 16px;box-shadow:0 2px 9px #0001}
+.order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;border-bottom:1px solid #eee;padding-bottom:12px}
+.order-id{font-weight:bold;font-size:18px}.meta{font-size:14px;color:#666;margin-top:5px}
+.status{display:inline-block;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:bold;background:#eee;color:#555}
+.status.done{background:#d9f5e5;color:#146c43}.status.progress{background:#fff0c2;color:#805b00}.status.cancel{background:#ffe0e0;color:#b42318}
+.items{padding:10px 0}.item{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px dashed #eee}.item:last-child{border-bottom:0}
+.item-name{font-weight:bold}.item-detail{font-size:13px;color:#777;margin-top:4px;line-height:1.5}.item-price{white-space:nowrap;font-weight:bold}
+.order-foot{border-top:1px solid #eee;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.total-label{color:#666}.total{font-size:21px;font-weight:bold;color:#e53935}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media(max-width:600px){header{padding:12px}.logo{font-size:18px}h1{font-size:23px}.order-card{padding:14px}.item{align-items:flex-start}.item-price{font-size:14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🍔 ร้านอิ่มอร่อย</div>
+  <nav><a class="btn btn-light" href="Menu.html">กลับไปเมนูอาหาร</a><button class="btn-dark" onclick="logout()">ออกจากระบบ</button></nav>
+</header>
+<main>
+  <h1>📋 ประวัติคำสั่งซื้อ</h1>
+  <div class="sub" id="welcome">รายการคำสั่งซื้อที่คุณเคยสั่ง</div>
+  <div id="message" class="message">กำลังโหลดประวัติคำสั่งซื้อ...</div>
+  <div id="orders"></div>
+</main>
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+const token = sessionStorage.getItem("loginToken") || localStorage.getItem("loginToken");
+const currentUser = (() => {
+  try { return JSON.parse(sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser") || "null"); }
+  catch (e) { return null; }
+})();
+document.addEventListener("DOMContentLoaded", loadOrderHistory);
+
+async function loadOrderHistory() {
+  const message = document.getElementById("message");
+  const container = document.getElementById("orders");
+  if (!token) { location.href = "Users.html"; return; }
+  if (currentUser && currentUser.Name) {
+    document.getElementById("welcome").textContent = "ประวัติคำสั่งซื้อของ " + currentUser.Name;
+  }
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "text/plain;charset=utf-8"},
+      body: JSON.stringify({action: "getMyOrders", token: token})
+    });
+    const result = await response.json();
+    if (!result.success) {
+      message.textContent = result.message || "โหลดประวัติคำสั่งซื้อไม่สำเร็จ";
+      return;
+    }
+    const orders = Array.isArray(result.orders) ? result.orders : [];
+    message.style.display = orders.length ? "none" : "block";
+    message.textContent = "ยังไม่มีประวัติคำสั่งซื้อ";
+    container.innerHTML = orders.map(renderOrder).join("");
+  } catch (error) {
+    message.textContent = "เชื่อมต่อระบบไม่ได้ กรุณาลองใหม่อีกครั้ง";
+    console.error(error);
+  }
+}
+
+function renderOrder(order) {
+  const items = Array.isArray(order.items) ? order.items : [];
+  const status = String(order.Status || "รอดำเนินการ");
+  const itemsHtml = items.length ? items.map(item => {
+    const quantity = Number(item.Quantity || 0);
+    const unitPrice = Number(item.UnitPrice || item.Price || 0);
+    const itemTotal = Number(item.ItemTotal || unitPrice * quantity);
+    const note = item.Note ? `<div class="item-detail">หมายเหตุ: ${safe(item.Note)}</div>` : "";
+    return `<div class="item"><div><div class="item-name">${safe(item.ProductName || "สินค้า")}</div>
+      <div class="item-detail">ขนาด ${safe(item.Size || "-")} × ${quantity} · ราคาต่อชิ้น ${money(unitPrice)}</div>${note}</div>
+      <div class="item-price">${money(itemTotal)}</div></div>`;
+  }).join("") : `<div class="item-detail">ไม่พบรายละเอียดสินค้าในคำสั่งซื้อนี้</div>`;
+  const orderId = safe(order.OrderID || "-");
+  const orderDate = safe(formatDate(order.OrderDate || order.CreatedAt || ""));
+  const total = Number(order.Total || order.TotalAmount || 0);
+  return `<section class="order-card"><div class="order-head"><div><div class="order-id">คำสั่งซื้อ ${orderId}</div>
+    <div class="meta">วันที่สั่งซื้อ: ${orderDate || "-"}</div></div><span class="status ${getStatusClass(status)}">${safe(status)}</span></div>
+    <div class="items">${itemsHtml}</div><div class="order-foot"><span class="total-label">ยอดรวมคำสั่งซื้อ</span><span class="total">${money(total)}</span></div>
+    <div class="actions"><a class="btn btn-dark" href="OrderTracking.html">📦 ไปหน้าติดตามคำสั่งซื้อ</a></div></section>`;
+}
+function getStatusClass(status) {
+  const v = String(status || "").toLowerCase();
+  if (v.includes("สำเร็จ") || v.includes("เสร็จ") || v.includes("completed") || v.includes("delivered") || v.includes("พร้อมรับ")) return "done";
+  if (v.includes("ยกเลิก") || v.includes("cancel")) return "cancel";
+  if (v.includes("กำลัง") || v.includes("รอ") || v.includes("ทำ") || v.includes("pending") || v.includes("process")) return "progress";
+  return "";
+}
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString("th-TH", {year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+}
+function money(value) {
+  return "฿" + Number(value || 0).toLocaleString("th-TH", {minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function safe(value) {
+  return String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function logout() {
+  if (!confirm("ต้องการออกจากระบบหรือไม่?")) return;
+  sessionStorage.removeItem("loginToken"); sessionStorage.removeItem("currentUser");
+  localStorage.removeItem("loginToken"); localStorage.removeItem("currentUser"); localStorage.removeItem("foodCart");
+  location.href = "Users.html";
+}
+</script>
+</body>
+</html>

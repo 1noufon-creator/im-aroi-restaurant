@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>เข้าสู่ระบบ | ร้านอิ่มอร่อย</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Tahoma,
+                sans-serif;
+
+            background: #ffffff;
+
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        .page {
+
+            min-height: 100vh;
+
+            padding: 25px 20px 40px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .food-bg {
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.035;
+
+            font-size: 80px;
+        }
+
+
+        .food-bg span {
+
+            position: absolute;
+        }
+
+
+        .food1 {
+
+            top: 120px;
+            left: 30px;
+
+            transform: rotate(-20deg);
+        }
+
+
+        .food2 {
+
+            top: 180px;
+            right: 20px;
+
+            transform: rotate(15deg);
+        }
+
+
+        .food3 {
+
+            bottom: 150px;
+            left: 30px;
+
+            transform: rotate(15deg);
+        }
+
+
+        .food4 {
+
+            bottom: 50px;
+            right: 20px;
+
+            transform: rotate(-15deg);
+        }
+
+
+        .header {
+
+            position: relative;
+
+            z-index: 1;
+
+            text-align: center;
+
+            margin: 20px auto 40px;
+        }
+
+
+        .logo {
+
+            font-size: 80px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .shop-name {
+
+            font-size: 42px;
+
+            font-weight: 700;
+
+            color: #111111;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subtitle {
+
+            font-size: 20px;
+
+            color: #777777;
+        }
+
+
+        .login-card {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            background: #ffffff;
+
+            border-radius: 30px;
+
+            padding: 45px 55px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.08);
+        }
+
+
+        .user-icon {
+
+            width: 78px;
+
+            height: 78px;
+
+            background: #e4f7ef;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 0 auto 18px;
+
+            font-size: 40px;
+        }
+
+
+        .login-title {
+
+            text-align: center;
+
+            font-size: 35px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .message {
+
+            display: none;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .message.error {
+
+            display: block;
+
+            background: #fff0f0;
+
+            color: #c62828;
+        }
+
+
+        .message.success {
+
+            display: block;
+
+            background: #edfff6;
+
+            color: #087f50;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 22px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            font-size: 19px;
+
+            font-weight: 600;
+
+            margin-bottom: 9px;
+        }
+
+
+        .input-box {
+
+            position: relative;
+        }
+
+
+        .input-box input {
+
+            width: 100%;
+
+            height: 62px;
+
+            border: 2px solid #d9dee7;
+
+            border-radius: 15px;
+
+            padding:
+                0 55px;
+
+            font-size: 18px;
+
+            outline: none;
+        }
+
+
+        .input-box input:focus {
+
+            border-color: #00a86b;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 168, 107, 0.08);
+        }
+
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            font-size: 23px;
+        }
+
+
+        .show-password {
+
+            position: absolute;
+
+            right: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            font-size: 21px;
+        }
+
+
+        .remember-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            font-size: 16px;
+        }
+
+
+        .remember {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .remember input {
+
+            width: 18px;
+
+            height: 18px;
+        }
+
+
+        .forgot {
+
+            color: #00a86b;
+
+            text-decoration: none;
+        }
+
+
+        .login-button {
+
+            width: 100%;
+
+            height: 64px;
+
+            border: none;
+
+            border-radius: 16px;
+
+            background: #00a86b;
+
+            color: white;
+
+            font-size: 22px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .login-button:hover {
+
+            background: #008f5a;
+        }
+
+
+        .login-button:disabled {
+
+            background: #86cdb1;
+
+            cursor: wait;
+        }
+
+
+        .register-button {
+
+            display: block;
+
+            width: 100%;
+
+            height: 60px;
+
+            margin-top: 16px;
+
+            border:
+                2px solid
+                #00a86b;
+
+            border-radius: 16px;
+
+            color: #00a86b;
+
+            background: white;
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            line-height: 56px;
+        }
+
+
+        .register-button:hover {
+
+            background: #edfff6;
+        }
+
+
+        @media (max-width: 768px) {
+
+            .page {
+
+                padding:
+                    15px
+                    15px
+                    30px;
+            }
+
+
+            .shop-name {
+
+                font-size: 34px;
+            }
+
+
+            .subtitle {
+
+                font-size: 18px;
+            }
+
+
+            .login-card {
+
+                padding:
+                    32px
+                    24px;
+            }
+
+
+            .login-title {
+
+                font-size: 29px;
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .shop-name {
+
+                font-size: 29px;
+            }
+
+
+            .login-card {
+
+                padding:
+                    28px
+                    18px;
+            }
+
+
+            .remember-row {
+
+                font-size: 14px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="food-bg">
+
+        <span class="food1">🍕</span>
+
+        <span class="food2">🍟</span>
+
+        <span class="food3">🥤</span>
+
+        <span class="food4">🍔</span>
+
+    </div>
+
+
+    <main class="page">
+
+
+        <section class="header">
+
+            <div class="logo">
+                🍔
+            </div>
+
+
+            <div class="shop-name">
+                ร้านอิ่มอร่อย
+            </div>
+
+
+            <div class="subtitle">
+                อร่อยง่าย สั่งได้ทุกที่
+            </div>
+
+        </section>
+
+
+
+        <section class="login-card">
+
+
+            <div class="user-icon">
+                👤
+            </div>
+
+
+            <h1 class="login-title">
+                เข้าสู่ระบบ
+            </h1>
+
+
+            <div
+                id="messageBox"
+                class="message"
+            ></div>
+
+
+            <form id="loginForm">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="กรอกอีเมลของคุณ"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="กรอกรหัสผ่าน"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="remember-row">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            id="remember"
+                        >
+
+                        <span>
+                            จดจำฉัน
+                        </span>
+
+                    </label>
+
+
+                    <a
+                        href="#"
+                        class="forgot"
+                        onclick="return false;"
+                    >
+                        ลืมรหัสผ่าน?
+                    </a>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="loginButton"
+                >
+                    เข้าสู่ระบบ
+                </button>
+
+
+            </form>
+
+
+
+            <a
+                href="Register.html"
+                class="register-button"
+            >
+                สมัครสมาชิก
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <script>
+
+        // =================================================
+        // URL ของ Google Apps Script
+        // =================================================
+
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+
+        // =================================================
+        // แสดง / ซ่อน Password
+        // =================================================
+
+        document
+            .getElementById("showPassword")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const password =
+                        document.getElementById(
+                            "password"
+                        );
+
+
+                    if (
+                        password.type ===
+                        "password"
+                    ) {
+
+                        password.type =
+                            "text";
+
+                        this.textContent =
+                            "🙈";
+
+                    } else {
+
+                        password.type =
+                            "password";
+
+                        this.textContent =
+                            "👁";
+
+                    }
+
+                }
+            );
+
+
+        // =================================================
+        // แสดงข้อความ
+        // =================================================
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            const box =
+                document.getElementById(
+                    "messageBox"
+                );
+
+
+            box.textContent =
+                message;
+
+
+            box.className =
+                "message " + type;
+
+        }
+
+
+        // =================================================
+        // Login
+        // =================================================
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const email =
+                        document
+                            .getElementById(
+                                "email"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const password =
+                        document
+                            .getElementById(
+                                "password"
+                            )
+                            .value;
+
+
+                    const remember =
+                        document
+                            .getElementById(
+                                "remember"
+                            )
+                            .checked;
+
+
+                    const loginButton =
+                        document
+                            .getElementById(
+                                "loginButton"
+                            );
+
+
+                    if (
+                        !email ||
+                        !password
+                    ) {
+
+                        showMessage(
+                            "กรุณากรอก Email และ Password",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    loginButton.disabled =
+                        true;
+
+
+                    loginButton.textContent =
+                        "กำลังเข้าสู่ระบบ...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                API_URL,
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    redirect:
+                                        "follow",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "text/plain;charset=utf-8"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            action:
+                                                "login",
+
+                                            email:
+                                                email,
+
+                                            password:
+                                                password
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (
+                            !result.success
+                        ) {
+
+                            showMessage(
+                                result.message ||
+                                "เข้าสู่ระบบไม่สำเร็จ",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // =================================================
+                        // เก็บข้อมูลผู้ใช้
+                        // =================================================
+
+                        const storage =
+                            remember
+                                ? localStorage
+                                : sessionStorage;
+
+
+                        storage.setItem(
+                            "loginToken",
+                            result.token
+                        );
+
+
+                        storage.setItem(
+                            "currentUser",
+                            JSON.stringify(
+                                result.user
+                            )
+                        );
+
+
+                        showMessage(
+                            "เข้าสู่ระบบสำเร็จ",
+                            "success"
+                        );
+
+
+                        // =================================================
+                        // แยกหน้า Customer / Admin
+                        // =================================================
+
+                        setTimeout(
+                            function () {
+
+                                if (
+                                    ["admin", "owner"].includes(
+                                        String(result.user.Role || "Customer").trim().toLowerCase()
+                                    )
+                                ) {
+
+                                    window.location.href =
+                                        "AdminDashboard.html";
+
+                                } else {
+
+                                    window.location.href =
+                                        "Menu.html";
+
+                                }
+
+                            },
+                            700
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        showMessage(
+                            "ไม่สามารถเชื่อมต่อ Google Sheets ได้",
+                            "error"
+                        );
+
+
+                    } finally {
+
+                        loginButton.disabled =
+                            false;
+
+                        loginButton.textContent =
+                            "เข้าสู่ระบบ";
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

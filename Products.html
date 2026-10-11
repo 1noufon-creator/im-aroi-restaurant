@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>จัดการสินค้า - ร้านอิ่มอร่อย</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, "Noto Sans Thai", sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+.header {
+  background: #222;
+  color: #fff;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 25px auto;
+  padding: 0 15px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.search {
+  padding: 12px;
+  width: 330px;
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+button {
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-add {
+  background: #198754;
+  color: #fff;
+}
+
+.btn-edit {
+  background: #ffc107;
+  color: #222;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #777;
+  color: #fff;
+}
+
+.btn-size {
+  background: #0d6efd;
+  color: #fff;
+}
+
+.table-box {
+  background: #fff;
+  border-radius: 10px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 950px;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  background: #eee;
+}
+
+.product-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #eee;
+}
+
+.status-active {
+  color: green;
+  font-weight: bold;
+}
+
+.status-inactive {
+  color: red;
+  font-weight: bold;
+}
+
+.stock-low {
+  color: red;
+  font-weight: bold;
+}
+
+.stock-ok {
+  color: green;
+}
+
+.sizes {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #eee;
+  font-size: 13px;
+}
+
+.badge.on {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.badge.off {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0008;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 50;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-box {
+  background: #fff;
+  width: 620px;
+  max-width: 100%;
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.modal-box h2 {
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group > label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-group input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font: inherit;
+}
+
+.form-group textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.size-box {
+  display: flex;
+  gap: 8px;
+}
+
+.size-box label {
+  background: #eee;
+  padding: 10px 18px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.size-box input {
+  width: auto;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  flex: 1;
+}
+
+.hint {
+  background: #f1f3f5;
+  border-radius: 8px;
+  padding: 10px;
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.empty,
+.loading {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
+/* ส่วนเลือกและแสดงตัวอย่างรูปภาพ */
+.image-upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  background: #fafafa;
+}
+
+.image-preview {
+  display: none;
+  max-width: 100%;
+  width: 220px;
+  max-height: 180px;
+  object-fit: contain;
+  margin: 0 auto 12px;
+  border-radius: 8px;
+  background: #eee;
+}
+
+.image-preview.show {
+  display: block;
+}
+
+.image-file-input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.image-help {
+  font-size: 13px;
+  color: #666;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.btn-remove-image {
+  background: #dc3545;
+  color: #fff;
+  margin-top: 5px;
+}
+
+@media (max-width: 600px) {
+  .header h2 {
+    font-size: 17px;
+  }
+
+  .container {
+    margin-top: 15px;
+  }
+
+  .modal-box {
+    padding: 17px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>🍔 ร้านอิ่มอร่อย - จัดการสินค้า</h2>
+  <button onclick="goBack()" style="background:#fff;color:#222">
+    ← กลับ
+  </button>
+</div>
+
+<div class="container">
+
+  <div class="topbar">
+    <input
+      id="search"
+      class="search"
+      placeholder="🔍 ค้นหาชื่อสินค้า หรือ ProductID..."
+      oninput="renderProducts()"
+    >
+
+    <button class="btn-add" onclick="openNewProduct()">
+      + เพิ่มสินค้าใหม่
+    </button>
+  </div>
+
+  <div class="hint">
+    สินค้า 1 รายการสามารถมีหลายขนาดได้ โดยใช้
+    <b>ProductID เดียวกัน</b>
+    เช่น เฟรนฟราย P001 → S, M, L
+  </div>
+
+  <div class="table-box">
+
+    <div id="loading" class="loading">
+      กำลังโหลดสินค้า...
+    </div>
+
+    <table id="productTable" style="display:none">
+      <thead>
+        <tr>
+          <th>รูป</th>
+          <th>ProductID</th>
+          <th>สินค้า</th>
+          <th>ขนาด</th>
+          <th>ราคา</th>
+          <th>Stock</th>
+          <th>สถานะ</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+
+      <tbody id="productBody"></tbody>
+    </table>
+
+  </div>
+</div>
+
+<!-- หน้าต่างเพิ่ม/แก้ไขสินค้า -->
+<div id="productModal" class="modal">
+
+  <div class="modal-box">
+
+    <h2 id="modalTitle">เพิ่มสินค้าใหม่</h2>
+
+    <div id="modalHint" class="hint"></div>
+
+    <input type="hidden" id="ProductID">
+    <input type="hidden" id="OldSize">
+    <input type="hidden" id="ImageURL">
+
+    
+<div class="form-group">
+  <label for="CategoryID">หมวดหมู่สินค้า</label>
+
+  <div style="display:flex; gap:8px; align-items:center;">
+    <select id="CategoryID" required style="flex:1; min-width:0;">
+      <option value="">กำลังโหลดหมวดหมู่...</option>
+    </select>
+
+    <button
+      type="button"
+      class="btn-add"
+      onclick="addNewCategory()"
+      style="white-space:nowrap;"
+    >
+      + เพิ่มหมวดหมู่
+    </button>
+  </div>
+</div>
+
+    <div class="form-group">
+      <label for="ProductName">ชื่อสินค้า</label>
+      <input
+        id="ProductName"
+        placeholder="เช่น เฟรนฟราย"
+      >
+    </div>
+
+    <div class="form-group">
+      <label>ขนาด</label>
+
+      <div class="size-box">
+        <label>
+          <input type="radio" name="Size" value="S" checked>
+          S
+        </label>
+
+        <label>
+          <input type="radio" name="Size" value="M">
+          M
+        </label>
+
+        <label>
+          <input type="radio" name="Size" value="L">
+          L
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="Weight">น้ำหนัก / ปริมาณ</label>
+      <input
+        type="number"
+        id="Weight"
+        min="0"
+        step="0.01"
+        placeholder="เช่น 200"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="Price">ราคา (บาท)</label>
+      <input
+        type="number"
+        id="Price"
+        min="0"
+        step="0.01"
+        placeholder="เช่น 35"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="Stock">จำนวน Stock</label>
+      <input
+        type="number"
+        id="Stock"
+        min="0"
+        step="1"
+        placeholder="เช่น 20"
+      >
+    </div>
+
+    <!-- เลือกรูปจากคอมพิวเตอร์ -->
+    <div class="form-group">
+
+      <label for="ImageFile">รูปภาพสินค้า</label>
+
+      <div class="image-upload-box">
+
+        <img
+          id="ImagePreview"
+          class="image-preview"
+          alt="ตัวอย่างรูปสินค้า"
+        >
+
+        <input
+          type="file"
+          id="ImageFile"
+          class="image-file-input"
+          accept="image/jpeg,image/png,image/webp"
+          onchange="previewSelectedImage(event)"
+        >
+
+        <div class="image-help">
+          เลือกรูปภาพจากคอมพิวเตอร์ของคุณ<br>
+          รองรับ JPG, PNG และ WEBP<br>
+          ขนาดไฟล์ไม่เกิน 2 MB
+        </div>
+
+        <button
+          type="button"
+          class="btn-remove-image"
+          onclick="removeProductImage()"
+        >
+          ลบรูปภาพ
+        </button>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="Description">รายละเอียด</label>
+      <textarea
+        id="Description"
+        placeholder="รายละเอียดสินค้า"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input type="checkbox" id="Active" checked>
+        เปิดขายสินค้า
+      </label>
+    </div>
+
+    <div class="form-buttons">
+      <button class="btn-cancel" onclick="closeModal()">
+        ยกเลิก
+      </button>
+
+      <button
+        id="saveButton"
+        class="btn-add"
+        onclick="saveProduct()"
+      >
+        บันทึก
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+const token =
+  sessionStorage.getItem("loginToken") ||
+  localStorage.getItem("loginToken");
+
+let products = [];
+let mode = "new"; // new | size | edit
+
+let categories = [];
+
+async function loadCategories(selectedID = "") {
+  const select = document.getElementById("CategoryID");
+
+  try {
+    const result = await api({ action: "getCategories" });
+
+    if (!result.success) {
+      throw new Error(result.message || "โหลดหมวดหมู่ไม่สำเร็จ");
+    }
+
+    categories = result.categories || [];
+
+    select.innerHTML = '<option value="">-- เลือกหมวดหมู่ --</option>';
+
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category.CategoryID;
+      option.textContent = category.CategoryName;
+      select.appendChild(option);
+    });
+
+    if (selectedID) {
+      select.value = selectedID;
+    }
+  } catch (error) {
+    console.error(error);
+    select.innerHTML = '<option value="">โหลดหมวดหมู่ไม่สำเร็จ</option>';
+    alert("ไม่สามารถโหลดหมวดหมู่ได้: " + error.message);
+  }
+}
+
+// แปลง CategoryID เป็นชื่อหมวดหมู่
+function getCategoryName(categoryID) {
+  const id = String(categoryID || "").trim();
+
+  const category = categories.find(item =>
+    String(item.CategoryID || "").trim() === id
+  );
+
+  return category
+    ? category.CategoryName
+    : id;
+}
+
+async function addNewCategory() {
+  const name = prompt("กรอกชื่อหมวดหมู่ใหม่ เช่น น้ำ, ของทอด, อาหาร หรือขนม");
+
+  if (name === null) return;
+
+  const categoryName = name.trim();
+
+  if (!categoryName) {
+    alert("กรุณากรอกชื่อหมวดหมู่");
+    return;
+  }
+
+  const duplicate = categories.some(category =>
+    String(category.CategoryName || "").trim().toLowerCase() ===
+    categoryName.toLowerCase()
+  );
+
+  if (duplicate) {
+    alert("มีหมวดหมู่นี้อยู่แล้ว");
+    return;
+  }
+
+  try {
+    const result = await api({
+      action: "addCategory",
+      token: token,
+      CategoryName: categoryName
+    });
+
+    if (!result.success) {
+      throw new Error(result.message || "เพิ่มหมวดหมู่ไม่สำเร็จ");
+    }
+
+    await loadCategories(result.CategoryID);
+
+    alert("เพิ่มหมวดหมู่ " + categoryName + " สำเร็จ");
+  } catch (error) {
+    console.error(error);
+    alert("เพิ่มหมวดหมู่ไม่สำเร็จ: " + error.message);
+  }
+}
+
+
+// เก็บไฟล์ที่ผู้ใช้เลือก
+let selectedImageFile = null;
+
+// URL รูปเดิมที่ใช้ใน Google Sheets
+let previousImageURL = "";
+
+// URL รูปสำหรับแสดงตัวอย่าง
+let previewObjectURL = null;
+
+window.onload = async function () {
+  if (!token) {
+    location.href = "Users.html";
+    return;
+  }
+
+  await loadCategories();
+  await loadProducts();
+};
+
+
+// เรียกใช้งาน Google Apps Script
+async function api(data) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(data)
+  });
+
+  return await response.json();
+}
+
+
+// โหลดรายการสินค้าจาก Google Sheets
+async function loadProducts() {
+  const loading = document.getElementById("loading");
+
+  loading.style.display = "block";
+  loading.textContent = "กำลังโหลดสินค้า...";
+
+  try {
+    const result = await api({
+      action: "getProducts"
+    });
+
+    if (!result.success) {
+      throw new Error(
+        result.message || "โหลดสินค้าไม่สำเร็จ"
+      );
+    }
+
+    products = result.products || [];
+
+    loading.style.display = "none";
+
+    document.getElementById("productTable").style.display =
+      "table";
+
+    renderProducts();
+
+  } catch (error) {
+    console.error(error);
+
+    loading.textContent =
+      "โหลดสินค้าไม่สำเร็จ กรุณาตรวจสอบการเชื่อมต่อ Google Sheets";
+
+    alert(
+      "ไม่สามารถเชื่อมต่อ Google Sheets ได้\n" +
+      error.message
+    );
+  }
+}
+
+
+// แสดงรายการสินค้า
+function renderProducts() {
+  const body = document.getElementById("productBody");
+
+  const keyword = document
+    .getElementById("search")
+    .value
+    .trim()
+    .toLowerCase();
+
+  body.innerHTML = "";
+
+  const groups = {};
+
+  products.forEach(product => {
+    const id = String(product.ProductID || "").trim();
+
+    if (!id) return;
+
+    if (!groups[id]) {
+      groups[id] = [];
+    }
+
+    groups[id].push(product);
+  });
+
+  const list = Object.values(groups).filter(variants =>
+    variants.some(product =>
+      String(product.ProductName || "")
+        .toLowerCase()
+        .includes(keyword) ||
+      String(product.ProductID || "")
+        .toLowerCase()
+        .includes(keyword)
+    )
+  );
+
+  if (!list.length) {
+    body.innerHTML =
+      '<tr><td colspan="8" class="empty">ไม่พบสินค้า</td></tr>';
+
+    return;
+  }
+
+  list.forEach(variants => {
+    const base = variants[0];
+
+    const sorted = ["S", "M", "L"]
+      .map(size =>
+        variants.find(product =>
+          String(product.Size || "").toUpperCase() === size
+        )
+      )
+      .filter(Boolean);
+
+    const stock = sorted.reduce(
+      (total, product) =>
+        total + Number(product.Stock || 0),
+      0
+    );
+
+    const active = sorted.some(product =>
+      isActive(product.Active)
+    );
+
+    const prices = sorted.map(product =>
+      Number(product.Price || 0)
+    );
+
+    
+    // เลือกรูปจากแถวแรกที่มี ImageURL
+    // ป้องกันกรณีแถวแรกไม่มี URL แต่ขนาดอื่นมีรูปอยู่
+    const productWithImage =
+      variants.find(product =>
+        String(product.ImageURL || "").trim() !== ""
+      );
+
+    const imageSource = productWithImage
+      ? productWithImage.ImageURL
+      : "";
+
+    const imageUrl = getDisplayImageUrl(imageSource);
+
+    const image = imageUrl
+      ? `<img
+           class="product-img"
+           src="${escapeHtml(imageUrl)}"
+           alt="${escapeHtml(base.ProductName)}"
+           loading="lazy"
+           onerror="this.onerror=null;this.replaceWith(document.createTextNode('รูปภาพโหลดไม่ได้'))"
+         >`
+      : "ไม่มีรูป";
+
+    const sizeHtml = sorted.map(product =>
+      `<button
+        class="badge ${isActive(product.Active) ? "on" : "off"}"
+        style="border:0;cursor:pointer"
+        onclick="editProductByIndex(${products.indexOf(product)})"
+      >${escapeHtml(product.Size)} ฿${Number(product.Price || 0).toFixed(2)}</button>`
+    ).join("");
+
+    body.innerHTML += `
+      <tr>
+        <td>${image}</td>
+
+        <td>
+          <b>${escapeHtml(base.ProductID)}</b>
+        </td>
+
+        <td>
+          <b>${escapeHtml(base.ProductName)}</b><br>
+          <small>${escapeHtml(getCategoryName(base.CategoryID))}</small>
+        </td>
+
+        <td>
+          <div class="sizes">
+            ${sizeHtml || "-"}
+          </div>
+        </td>
+
+        <td>
+          ${prices.length
+            ? "฿" + Math.min(...prices).toFixed(2)
+            : "-"
+          }
+        </td>
+
+        <td class="${stock <= 5 ? "stock-low" : "stock-ok"}">
+          ${stock}
+        </td>
+
+        <td>
+          ${active
+            ? '<span class="status-active">เปิดขาย</span>'
+            : '<span class="status-inactive">ปิดขาย</span>'
+          }
+        </td>
+
+        <td style="white-space:nowrap">
+          <button
+            class="btn-size"
+            onclick="openAddSizeByIndex(${products.indexOf(base)})"
+          >
+            + เพิ่มขนาด
+          </button>
+
+          <button
+            class="btn-edit"
+            onclick="editProductByIndex(${products.indexOf(sorted[0] || base)})"
+          >
+            แก้ไข
+          </button>
+
+          <button
+            class="btn-delete"
+            onclick="deleteProductGroup('${escapeHtml(base.ProductID)}')"
+          >
+            ลบสินค้า
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+
+// ใช้ index เพื่อเลือกข้อมูลสินค้าโดยไม่ฝัง object ลงใน onclick
+function editProductByIndex(index) {
+  const product = products[index];
+
+  if (product) {
+    editVariant(product);
+  }
+}
+
+function openAddSizeByIndex(index) {
+  const product = products[index];
+
+  if (product) {
+    openAddSize(product);
+  }
+}
+
+
+// ตรวจสอบสถานะเปิดขาย
+function isActive(value) {
+  const x = String(value ?? "").toLowerCase().trim();
+
+  return (
+    x === "true" ||
+    x === "1" ||
+    x === "active" ||
+    x === "เปิดขาย"
+  );
+}
+
+
+// ตั้งค่า input
+function setValue(id, value) {
+  document.getElementById(id).value = value ?? "";
+}
+
+
+// อ่านขนาดสินค้า
+function getSize() {
+  return document.querySelector(
+    'input[name="Size"]:checked'
+  )?.value || "S";
+}
+
+
+// เลือกขนาดสินค้า
+function setSize(size) {
+  const value = String(size || "S").toUpperCase();
+
+  const element = document.querySelector(
+    `input[name="Size"][value="${value}"]`
+  );
+
+  if (element) {
+    element.checked = true;
+  }
+}
+
+
+// แสดงรูปตัวอย่าง
+function previewSelectedImage(event) {
+  const file = event.target.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("กรุณาเลือกไฟล์ JPG, PNG หรือ WEBP เท่านั้น");
+
+    event.target.value = "";
+    selectedImageFile = null;
+
+    showImagePreview(previousImageURL);
+
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2 MB");
+
+    event.target.value = "";
+    selectedImageFile = null;
+
+    showImagePreview(previousImageURL);
+
+    return;
+  }
+
+  selectedImageFile = file;
+
+  // แสดงตัวอย่างรูปที่เลือก
+  if (previewObjectURL) {
+    URL.revokeObjectURL(previewObjectURL);
+  }
+
+  previewObjectURL = URL.createObjectURL(file);
+
+  const preview = document.getElementById("ImagePreview");
+
+  preview.src = previewObjectURL;
+  preview.classList.add("show");
+}
+
+
+// แสดงรูปจาก URL
+function showImagePreview(url) {
+  const preview = document.getElementById("ImagePreview");
+
+  if (previewObjectURL) {
+    URL.revokeObjectURL(previewObjectURL);
+    previewObjectURL = null;
+  }
+
+  if (!url) {
+    preview.removeAttribute("src");
+    preview.classList.remove("show");
+    return;
+  }
+
+  preview.src = getDisplayImageUrl(url);
+  preview.classList.add("show");
+}
+
+
+// ตั้งค่ารูปสินค้าเดิมเมื่อเปิดหน้าแก้ไข
+function setProductImage(url) {
+  previousImageURL = url || "";
+
+  setValue("ImageURL", previousImageURL);
+
+  selectedImageFile = null;
+
+  document.getElementById("ImageFile").value = "";
+
+  showImagePreview(previousImageURL);
+}
+
+
+// ลบรูปสินค้า
+function removeProductImage() {
+  const confirmed = confirm(
+    "ต้องการลบรูปภาพสินค้านี้หรือไม่?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  selectedImageFile = null;
+  previousImageURL = "";
+
+  setValue("ImageURL", "");
+
+  document.getElementById("ImageFile").value = "";
+
+  showImagePreview("");
+}
+
+
+// อัปโหลดรูปภาพขึ้น Google Drive ผ่าน Apps Script
+async function uploadSelectedImage() {
+  // ถ้าไม่ได้เลือกรูปใหม่ ให้ใช้ URL รูปเดิม
+  if (!selectedImageFile) {
+    return document.getElementById("ImageURL").value.trim();
+  }
+
+  const file = selectedImageFile;
+
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2 MB");
+  }
+
+  const base64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = function () {
+      const result = String(reader.result || "");
+      const commaIndex = result.indexOf(",");
+
+      if (commaIndex < 0) {
+        reject(new Error("ไม่สามารถอ่านไฟล์รูปภาพได้"));
+        return;
+      }
+
+      resolve(result.substring(commaIndex + 1));
+    };
+
+    reader.onerror = function () {
+      reject(new Error("อ่านไฟล์รูปภาพไม่สำเร็จ"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  const result = await api({
+    action: "uploadProductImage",
+    token: token,
+    fileName: file.name,
+    mimeType: file.type,
+    base64: base64
+  });
+
+  if (!result.success || !result.ImageURL) {
+    throw new Error(
+      result.message || "อัปโหลดรูปภาพไม่สำเร็จ"
+    );
+  }
+
+  // เก็บ URL รูปที่อัปโหลดสำเร็จ
+  setValue("ImageURL", result.ImageURL);
+
+  previousImageURL = result.ImageURL;
+  selectedImageFile = null;
+
+  document.getElementById("ImageFile").value = "";
+
+  return result.ImageURL;
+}
+
+
+// เปิดฟอร์มเพิ่มสินค้าใหม่
+function openNewProduct() {
+  mode = "new";
+
+  document.getElementById("modalTitle").textContent =
+    "เพิ่มสินค้าใหม่";
+
+  document.getElementById("modalHint").textContent =
+    "สร้าง ProductID ใหม่ ระบบจะใช้ ProductID เดียวกันเมื่อเพิ่มขนาดในภายหลัง";
+
+  setValue("ProductID", "");
+  setValue("OldSize", "");
+  document.getElementById("CategoryID").value = "";
+  setValue("ProductName", "");
+
+  setSize("S");
+
+  setValue("Weight", "");
+  setValue("Price", "");
+  setValue("Stock", "");
+
+  setProductImage("");
+
+  setValue("Description", "");
+
+  document.getElementById("Active").checked = true;
+
+  document.getElementById("productModal").classList.add("show");
+}
+
+
+// เปิดฟอร์มเพิ่มขนาดสินค้าเดิม
+function openAddSize(base) {
+  mode = "size";
+
+  document.getElementById("modalTitle").textContent =
+    "เพิ่มขนาดให้สินค้าเดิม";
+
+  document.getElementById("modalHint").innerHTML =
+    `สินค้า <b>${escapeHtml(base.ProductName)}</b> ใช้ ProductID <b>${escapeHtml(base.ProductID)}</b> เดิม ไม่สร้าง ProductID ใหม่`;
+
+  setValue("ProductID", base.ProductID);
+  setValue("OldSize", "");
+  document.getElementById("CategoryID").value = base.CategoryID;
+  setValue("ProductName", base.ProductName);
+
+  const used = products
+    .filter(product =>
+      String(product.ProductID) === String(base.ProductID)
+    )
+    .map(product =>
+      String(product.Size || "").toUpperCase()
+    );
+
+  const nextSize =
+    ["S", "M", "L"].find(size => !used.includes(size)) || "S";
+
+  setSize(nextSize);
+
+  setValue("Weight", base.Weight);
+  setValue("Price", "");
+  setValue("Stock", "");
+
+  setProductImage(base.ImageURL);
+
+  setValue("Description", base.Description);
+
+  document.getElementById("Active").checked = true;
+
+  document.getElementById("productModal").classList.add("show");
+}
+
+
+// เปิดฟอร์มแก้ไขสินค้า
+function editVariant(product) {
+  mode = "edit";
+
+  document.getElementById("modalTitle").textContent =
+    "แก้ไขขนาดสินค้า";
+
+  document.getElementById("modalHint").innerHTML =
+    `แก้ไข <b>${escapeHtml(product.ProductName)}</b> ขนาด <b>${escapeHtml(product.Size)}</b> โดยยังใช้ ProductID เดิม`;
+
+  setValue("ProductID", product.ProductID);
+  setValue("OldSize", product.Size);
+  document.getElementById("CategoryID").value = product.CategoryID;
+  setValue("ProductName", product.ProductName);
+
+  setSize(product.Size);
+
+  setValue("Weight", product.Weight);
+  setValue("Price", product.Price);
+  setValue("Stock", product.Stock);
+
+  setProductImage(product.ImageURL);
+
+  setValue("Description", product.Description);
+
+  document.getElementById("Active").checked =
+    isActive(product.Active);
+
+  document.getElementById("productModal").classList.add("show");
+}
+
+
+// บันทึกสินค้า
+async function saveProduct() {
+  const saveButton = document.getElementById("saveButton");
+
+  const data = {
+    token: token,
+
+    ProductID: document
+      .getElementById("ProductID")
+      .value.trim(),
+
+    OldSize: document
+      .getElementById("OldSize")
+      .value.trim(),
+
+    CategoryID: document
+      .getElementById("CategoryID")
+      .value.trim(),
+
+    ProductName: document
+      .getElementById("ProductName")
+      .value.trim(),
+
+    Size: getSize(),
+
+    Weight: document.getElementById("Weight").value,
+
+    Price: document.getElementById("Price").value,
+
+    Stock: document.getElementById("Stock").value,
+
+    ImageURL: document
+      .getElementById("ImageURL")
+      .value.trim(),
+
+    Description: document
+      .getElementById("Description")
+      .value.trim(),
+
+    Active: document.getElementById("Active").checked
+  };
+
+  if (!data.ProductName) {
+    alert("กรุณากรอกชื่อสินค้า");
+    return;
+  }
+
+  if (data.Price === "" || Number(data.Price) < 0) {
+    alert("กรุณากรอกราคาให้ถูกต้อง");
+    return;
+  }
+
+  if (data.Stock === "" || Number(data.Stock) < 0) {
+    alert("กรุณากรอก Stock ให้ถูกต้อง");
+    return;
+  }
+
+  if (!Number.isInteger(Number(data.Stock))) {
+    alert("จำนวน Stock ต้องเป็นจำนวนเต็ม");
+    return;
+  }
+
+  const originalButtonText = saveButton.textContent;
+
+  saveButton.disabled = true;
+
+  try {
+    // ถ้าเลือกรูปใหม่ ให้อัปโหลดก่อนบันทึกสินค้า
+    saveButton.textContent = selectedImageFile
+      ? "กำลังอัปโหลดรูป..."
+      : "กำลังบันทึก...";
+
+    data.ImageURL = await uploadSelectedImage();
+
+    data.action =
+      mode === "new"
+        ? "addProduct"
+        : mode === "size"
+          ? "addProductSize"
+          : "updateProductSize";
+
+    saveButton.textContent = "กำลังบันทึก...";
+
+    const result = await api(data);
+
+    if (!result.success) {
+      alert(result.message || "บันทึกไม่สำเร็จ");
+      return;
+    }
+
+    alert(result.message || "บันทึกสำเร็จ");
+
+    closeModal();
+
+    await loadProducts();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "เกิดข้อผิดพลาดในการบันทึก\n" +
+      (error.message || "กรุณาลองใหม่อีกครั้ง")
+    );
+
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = originalButtonText;
+  }
+}
+
+
+// ลบสินค้าทุกขนาดของ ProductID เดียวกัน
+async function deleteProductGroup(productID) {
+  const variants = products.filter(product =>
+    String(product.ProductID) === String(productID)
+  );
+
+  const productName = variants[0]?.ProductName || productID;
+
+  const sizes = variants
+    .map(product => product.Size)
+    .join(", ");
+
+  if (!confirm(
+    `ต้องการลบสินค้า ${productName} ทุกขนาด (${sizes}) หรือไม่?`
+  )) {
+    return;
+  }
+
+  try {
+    const result = await api({
+      action: "deleteProduct",
+      token: token,
+      ProductID: productID
+    });
+
+    if (!result.success) {
+      alert(result.message || "ลบสินค้าไม่สำเร็จ");
+      return;
+    }
+
+    alert(result.message || "ลบสินค้าสำเร็จ");
+
+    await loadProducts();
+
+  } catch (error) {
+    console.error(error);
+    alert("ไม่สามารถลบสินค้าได้");
+  }
+}
+
+
+// ปิดหน้าต่าง
+function closeModal() {
+  document.getElementById("productModal").classList.remove("show");
+
+  selectedImageFile = null;
+
+  if (previewObjectURL) {
+    URL.revokeObjectURL(previewObjectURL);
+    previewObjectURL = null;
+  }
+}
+
+
+// กลับหน้า Dashboard
+function goBack() {
+  location.href = "AdminDashboard.html";
+}
+
+
+// แปลงลิงก์รูปภาพ Google Drive ให้แสดงในหน้าเว็บ
+function getDisplayImageUrl(value) {
+  const url = String(value || "").trim();
+
+  if (!url) {
+    return "";
+  }
+
+  let match = url.match(
+    /drive\.google\.com\/file\/d\/([^/]+)/i
+  );
+
+  if (!match) {
+    match = url.match(
+      /drive\.google\.com\/(?:open|uc)\?.*?[?&]id=([^&]+)/i
+    );
+  }
+
+  if (match) {
+    return (
+      "https://drive.google.com/thumbnail?id=" +
+      encodeURIComponent(match[1]) +
+      "&sz=w600"
+    );
+  }
+
+  return url;
+}
+
+
+// ป้องกันข้อความ HTML แทรกในข้อมูลที่แสดง
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+</script>
+
+</body>
+</html>

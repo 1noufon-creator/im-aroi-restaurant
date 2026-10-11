@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สรุปคำสั่งซื้อ - ร้านอิ่มอร่อย</title>
+
+<!-- ใช้สำหรับสร้าง QR Code บนหน้าเว็บ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:#f5f5f5;color:#222}
+.header{background:#fff;border-bottom:1px solid #ddd;padding:16px 24px;position:sticky;top:0;z-index:10}
+.header-inner{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{font-size:22px;font-weight:bold}
+.back-btn{border:1px solid #ddd;background:#fff;border-radius:8px;padding:9px 14px;cursor:pointer}
+.container{max-width:1100px;margin:25px auto;padding:0 16px}
+.page-title{margin-bottom:20px}
+.page-title h1{font-size:28px;margin-bottom:6px}
+.page-title p{color:#666}
+.layout{display:grid;grid-template-columns:1fr 330px;gap:20px}
+.card{background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e5e5;margin-bottom:18px}
+.card h2{font-size:19px;margin-bottom:15px}
+.user-info{line-height:1.8;color:#444}
+.order-item{display:grid;grid-template-columns:90px 1fr auto;gap:15px;align-items:center;border-bottom:1px solid #eee;padding:15px 0}
+.order-item:first-child{padding-top:0}
+.order-item:last-child{border-bottom:none}
+.item-image{width:90px;height:90px;border-radius:10px;object-fit:cover;background:#eee}
+.item-name{font-weight:bold;font-size:17px;margin-bottom:5px}
+.item-detail{color:#666;font-size:14px;margin-bottom:8px}
+.note{color:#777;font-size:13px;margin-top:5px}
+.qty-control{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qty-control button{width:30px;height:30px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer;font-size:18px}
+.qty-control span{min-width:25px;text-align:center}
+.item-price{text-align:right;min-width:100px}
+.price{font-weight:bold;font-size:17px}
+.unit-price{color:#777;font-size:13px;margin-bottom:8px}
+.delete-btn{margin-top:8px;border:none;background:none;color:#d33;cursor:pointer}
+.summary{position:sticky;top:90px}
+.summary-row{display:flex;justify-content:space-between;padding:10px 0}
+.summary-row.total{border-top:1px solid #ddd;margin-top:10px;padding-top:18px;font-size:21px;font-weight:bold}
+.order-note{width:100%;min-height:90px;border:1px solid #ccc;border-radius:8px;padding:10px;resize:vertical;font-family:inherit}
+.payment-box{display:flex;flex-direction:column;gap:10px}
+.payment-option{border:1px solid #ddd;border-radius:8px;padding:12px;cursor:pointer}
+.payment-option input{margin-right:8px}
+.qr-option{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qr-view-btn{border:none;background:#222;color:#fff;border-radius:7px;padding:7px 10px;cursor:pointer}
+.confirm-btn{width:100%;border:none;background:#222;color:#fff;padding:14px;border-radius:9px;font-size:17px;cursor:pointer;margin-top:15px}
+.confirm-btn:disabled{background:#aaa;cursor:not-allowed}
+.empty{text-align:center;padding:50px 20px;color:#666}
+.empty button{margin-top:15px;padding:11px 18px;border:none;background:#222;color:#fff;border-radius:8px;cursor:pointer}
+.loading{text-align:center;padding:30px;color:#666}
+.success-box{display:none;background:#fff;border:1px solid #ddd;border-radius:12px;padding:35px 20px;text-align:center;max-width:600px;margin:40px auto}
+.success-icon{font-size:55px;margin-bottom:15px}
+.success-box h1{margin-bottom:10px}
+.order-id{font-size:22px;font-weight:bold;margin:15px 0}
+.success-box button{border:none;padding:12px 20px;border-radius:8px;cursor:pointer;margin:5px}
+.menu-btn{background:#222;color:#fff}
+.orders-btn{background:#eee;color:#222}
+
+/* QR Modal */
+.qr-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;align-items:center;justify-content:center;padding:15px}
+.qr-modal.show{display:flex}
+.qr-box{background:#fff;width:420px;max-width:100%;border-radius:15px;padding:25px;text-align:center;position:relative}
+.qr-close{position:absolute;right:12px;top:8px;border:none;background:none;font-size:28px;cursor:pointer;color:#555}
+.qr-box h2{margin-bottom:8px}
+.qr-amount{font-size:24px;font-weight:bold;margin:12px 0}
+#qrcode{display:flex;justify-content:center;margin:18px auto}
+#qrcode img,#qrcode canvas{margin:auto}
+.qr-help{color:#666;font-size:14px;line-height:1.6}
+.promptpay-warning{background:#fff3cd;color:#664d03;border-radius:8px;padding:10px;margin-top:12px;font-size:13px}
+.qr-open-btn{margin-top:15px;border:none;background:#222;color:#fff;border-radius:8px;padding:11px 18px;cursor:pointer}
+
+@media(max-width:800px){.layout{grid-template-columns:1fr}.summary{position:static}}
+@media(max-width:600px){
+.header{padding:13px 15px}.logo{font-size:18px}.container{margin-top:18px}.page-title h1{font-size:23px}.card{padding:15px}
+.order-item{grid-template-columns:70px 1fr;gap:10px}.item-image{width:70px;height:70px}.item-price{grid-column:2;text-align:left}
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">🍔 ร้านอิ่มอร่อย</div>
+        <button class="back-btn" onclick="goBack()">← กลับไปเลือกอาหาร</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="page-title">
+        <h1>สรุปคำสั่งซื้อ</h1>
+        <p>ตรวจสอบรายการอาหารก่อนยืนยันการสั่งซื้อ</p>
+    </div>
+
+    <div id="loading" class="loading">กำลังโหลดตะกร้า...</div>
+
+    <div id="mainContent" class="layout" style="display:none;">
+
+        <section>
+            <div class="card">
+                <h2>👤 ข้อมูลผู้สั่งซื้อ</h2>
+                <div id="userInfo" class="user-info"></div>
+            </div>
+
+            <div class="card">
+                <h2>🛒 รายการอาหาร</h2>
+                <div id="orderItems"></div>
+            </div>
+
+            <div class="card">
+                <h2>📝 หมายเหตุสำหรับออเดอร์</h2>
+                <textarea id="orderNote" class="order-note"
+                    placeholder="เช่น ไม่ใส่ผัก, ขอช้อนเพิ่ม..."></textarea>
+            </div>
+
+            <div class="card">
+                <h2>💳 วิธีชำระเงิน</h2>
+
+                <div class="payment-box">
+
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="เงินสด" checked
+                               onchange="paymentChanged()">
+                        💵 เงินสด
+                    </label>
+
+                    <div class="payment-option qr-option">
+                        <label style="cursor:pointer;flex:1;">
+                            <input type="radio" name="paymentMethod" value="QR"
+                                   onchange="paymentChanged()">
+                            📱 QR / โอนเงิน
+                        </label>
+
+                        <button type="button" class="qr-view-btn" onclick="showQR()">
+                            ดู QR
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <aside>
+            <div class="card summary">
+                <h2>💰 สรุปยอด</h2>
+
+                <div class="summary-row">
+                    <span>จำนวนรายการ</span>
+                    <span id="itemCount">0 ชิ้น</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>ยอดรวมอาหาร</span>
+                    <span id="subtotal">฿0.00</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>ยอดสุทธิ</span>
+                    <span id="grandTotal">฿0.00</span>
+                </div>
+
+                <button id="confirmBtn" class="confirm-btn" onclick="confirmOrder()">
+                    ยืนยันสั่งซื้อ
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <div id="emptyCart" class="empty" style="display:none;">
+        <h2>🛒 ตะกร้าของคุณว่าง</h2>
+        <p>กรุณาเลือกอาหารก่อนทำรายการสั่งซื้อ</p>
+        <button onclick="window.location.href='Menu.html'">ไปเลือกอาหาร</button>
+    </div>
+
+    <div id="successBox" class="success-box">
+
+    <div class="success-icon">
+        ✅
+    </div>
+
+    <h1>
+        สั่งซื้อสำเร็จ
+    </h1>
+
+    <p>
+        ระบบได้รับคำสั่งซื้อของคุณแล้ว
+    </p>
+
+    <div
+        class="order-id"
+        id="successOrderId"
+    >
+        OrderID
+    </div>
+
+    <p id="successTotal">
+        ยอดรวม ฿0.00
+    </p>
+
+    <p>
+        สถานะ:
+        <strong>
+            รับออเดอร์แล้ว
+        </strong>
+    </p>
+
+
+    <div
+        style="
+            margin-top:25px;
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:10px;
+        "
+    >
+
+        <!-- ปุ่มติดตามออเดอร์ -->
+
+        <button
+            class="orders-btn"
+            onclick="goTracking()"
+            style="
+                background:#222;
+                color:#fff;
+                border:none;
+                padding:13px 20px;
+                border-radius:8px;
+                cursor:pointer;
+                font-size:16px;
+                font-weight:bold;
+            "
+        >
+            📦 ติดตามสถานะออเดอร์
+        </button>
+
+
+        <!-- กลับเมนู -->
+
+        <button
+            class="menu-btn"
+            onclick="
+                window.location.href='Menu.html'
+            "
+        >
+            🍔 กลับไปหน้าอาหาร
+        </button>
+
+    </div>
+
+</div>
+
+</main>
+
+<!-- QR Modal -->
+<div id="qrModal" class="qr-modal" onclick="closeQR(event)">
+    <div class="qr-box" onclick="event.stopPropagation()">
+        <button class="qr-close" onclick="closeQR()">×</button>
+
+        <h2>📱 QR สำหรับชำระเงิน</h2>
+        <p>สแกน QR นี้เพื่อโอนเงิน</p>
+
+        <div class="qr-amount" id="qrAmount">฿0.00</div>
+
+        <div id="qrcode"></div>
+
+        <div class="qr-help">
+            กรุณาตรวจสอบยอดเงินก่อนโอน<br>
+            หลังโอนแล้วสามารถกดยืนยันสั่งซื้อได้
+        </div>
+
+        <div id="qrWarning" class="promptpay-warning" style="display:none;">
+            ยังไม่ได้ตั้งค่าเลข PromptPay<br>
+            กรุณาใส่เลข PromptPay ในตัวแปร <b>PROMPTPAY_ID</b> ในไฟล์นี้ก่อนใช้งานจริง
+        </div>
+
+        <button class="qr-open-btn" onclick="closeQR()">
+            ปิด
+        </button>
+    </div>
+</div>
+
+<script>
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+/*
+=========================================================
+ตั้งค่าเลข PromptPay ของร้านตรงนี้
+ตัวอย่าง:
+PROMPTPAY_ID = "0812345678";
+หรือเลขบัตรประชาชน 13 หลัก
+=========================================================
+*/
+const PROMPTPAY_ID = "0817256605";
+
+const token =
+    sessionStorage.getItem("loginToken") ||
+    localStorage.getItem("loginToken");
+
+let currentUser = null;
+let cart = [];
+
+function getCurrentUser() {
+    const raw =
+        sessionStorage.getItem("currentUser") ||
+        localStorage.getItem("currentUser");
+
+    if (!raw) return null;
+
+    try {
+        return JSON.parse(raw);
+    } catch (error) {
+        return null;
+    }
+}
+
+function getCart() {
+    const raw = localStorage.getItem("foodCart");
+
+    if (!raw) return [];
+
+    try {
+        const data = JSON.parse(raw);
+        return Array.isArray(data) ? data : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function money(value) {
+    return "฿" + Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function safe(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function goBack() {
+    window.location.href = "Menu.html";
+}
+
+function showPage() {
+    document.getElementById("loading").style.display = "none";
+
+    if (cart.length === 0) {
+        document.getElementById("emptyCart").style.display = "block";
+        document.getElementById("mainContent").style.display = "none";
+        return;
+    }
+
+    document.getElementById("emptyCart").style.display = "none";
+    document.getElementById("mainContent").style.display = "grid";
+
+    renderUser();
+    renderCart();
+}
+
+function renderUser() {
+    const box = document.getElementById("userInfo");
+
+    const name =
+        currentUser?.Name ||
+        currentUser?.name ||
+        "-";
+
+    const email =
+        currentUser?.Email ||
+        currentUser?.email ||
+        "-";
+
+    box.innerHTML = `
+        <div><strong>ชื่อ:</strong> ${safe(name)}</div>
+        <div><strong>Email:</strong> ${safe(email)}</div>
+    `;
+}
+
+/*
+=========================================================
+สำคัญ:
+Menu.html ของเราเก็บข้อมูลใน localStorage เป็นชื่อแบบ
+ProductID, ProductName, Size, Price, Quantity, Weight...
+ดังนั้น OrderSummary ต้องอ่านชื่อเดียวกัน
+=========================================================
+*/
+function renderCart() {
+    const box = document.getElementById("orderItems");
+
+    let total = 0;
+    let itemCount = 0;
+
+    if (!cart.length) {
+        box.innerHTML = `
+            <div class="empty">
+                <h3>ไม่มีสินค้าในตะกร้า</h3>
+            </div>
+        `;
+        updateSummary(0, 0);
+        return;
+    }
+
+    box.innerHTML = cart.map((item, index) => {
+
+        const quantity = Math.max(1, Number(item.Quantity || 1));
+        const unitPrice = Number(item.Price || 0);
+        const itemTotal = unitPrice * quantity;
+
+        total += itemTotal;
+        itemCount += quantity;
+
+        const image = item.ImageURL || "";
+
+        const imageHtml = image
+            ? `<img class="item-image"
+                    src="${safe(image)}"
+                    alt="${safe(item.ProductName || "สินค้า")}"
+                    onerror="this.style.display='none';">`
+            : `<div class="item-image"></div>`;
+
+        return `
+            <div class="order-item">
+
+                ${imageHtml}
+
+                <div>
+                    <div class="item-name">
+                        ${safe(item.ProductName || "สินค้า")}
+                    </div>
+
+                    <div class="item-detail">
+                        ขนาด:
+                        <strong>${safe(item.Size || "-")}</strong>
+                        ${item.Weight ? ` | น้ำหนัก: ${safe(item.Weight)}` : ""}
+                    </div>
+
+                    <div class="unit-price">
+                        ${money(unitPrice)} / ชิ้น
+                    </div>
+
+                    <div class="qty-control">
+                        <button onclick="changeQuantity(${index}, -1)">−</button>
+                        <span>${quantity}</span>
+                        <button onclick="changeQuantity(${index}, 1)">+</button>
+                    </div>
+
+                    ${
+                        item.Note
+                        ? `<div class="note">หมายเหตุ: ${safe(item.Note)}</div>`
+                        : ""
+                    }
+
+                    <button class="delete-btn" onclick="removeItem(${index})">
+                        ลบรายการ
+                    </button>
+                </div>
+
+                <div class="item-price">
+                    <div class="price">${money(itemTotal)}</div>
+                </div>
+
+            </div>
+        `;
+    }).join("");
+
+    updateSummary(total, itemCount);
+}
+
+function updateSummary(total, itemCount) {
+    document.getElementById("itemCount").textContent =
+        itemCount + " ชิ้น";
+
+    document.getElementById("subtotal").textContent =
+        money(total);
+
+    document.getElementById("grandTotal").textContent =
+        money(total);
+}
+
+function getCartTotal() {
+    return cart.reduce((sum, item) => {
+        return sum +
+            Number(item.Price || 0) *
+            Math.max(1, Number(item.Quantity || 1));
+    }, 0);
+}
+
+function saveCart() {
+    localStorage.setItem("foodCart", JSON.stringify(cart));
+}
+
+function changeQuantity(index, change) {
+    if (!cart[index]) return;
+
+    const current = Number(cart[index].Quantity || 1);
+    const maxStock = Number(
+        cart[index].Stock ??
+        cart[index].stock ??
+        999999
+    );
+
+    let next = current + change;
+
+    if (next < 1) next = 1;
+
+    if (maxStock > 0 && next > maxStock) {
+        next = maxStock;
+        alert("จำนวนสินค้าเกินสต็อกที่มี");
+    }
+
+    cart[index].Quantity = next;
+
+    saveCart();
+    renderCart();
+}
+
+function removeItem(index) {
+    if (!cart[index]) return;
+
+    const name =
+        cart[index].ProductName ||
+        "รายการนี้";
+
+    if (!confirm("ต้องการลบ " + name + " ออกจากตะกร้าหรือไม่?")) {
+        return;
+    }
+
+    cart.splice(index, 1);
+    saveCart();
+    showPage();
+}
+
+function getPaymentMethod() {
+    const selected =
+        document.querySelector(
+            'input[name="paymentMethod"]:checked'
+        );
+
+    return selected ? selected.value : "เงินสด";
+}
+
+function buildOrderItems() {
+    /*
+    ส่งชื่อฟิลด์ให้ตรงกับ Code.gs:
+    ProductID, ProductName, Size, Weight,
+    Quantity, UnitPrice, ItemTotal, Note
+    */
+    return cart.map(item => {
+
+        const quantity =
+            Number(item.Quantity || 1);
+
+        const unitPrice =
+            Number(item.Price || 0);
+
+        return {
+            ProductID: item.ProductID,
+            ProductName: item.ProductName || "",
+            Size: item.Size || "",
+            Weight: item.Weight || "",
+            Quantity: quantity,
+            UnitPrice: unitPrice,
+            ItemTotal: unitPrice * quantity,
+            Note: item.Note || ""
+        };
+    });
+}
+
+function paymentChanged() {
+    const method = getPaymentMethod();
+
+    if (method === "QR") {
+        showQR();
+    }
+}
+
+/* =====================================================
+   PROMPTPAY QR
+   ===================================================== */
+
+function tlv(tag, value) {
+    const text = String(value);
+    return tag +
+        String(text.length).padStart(2, "0") +
+        text;
+}
+
+function crc16(str) {
+    let crc = 0xFFFF;
+
+    for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) {
+                crc =
+                    ((crc << 1) ^ 0x1021) &
+                    0xFFFF;
+            } else {
+                crc =
+                    (crc << 1) &
+                    0xFFFF;
+            }
+        }
+    }
+
+    return crc
+        .toString(16)
+        .toUpperCase()
+        .padStart(4, "0");
+}
+
+function normalizePromptPay(id) {
+    let value =
+        String(id || "")
+            .replace(/[^0-9]/g, "");
+
+    if (value.startsWith("0066") && value.length === 13) {
+        return {
+            type: "phone",
+            value: value
+        };
+    }
+
+    if (value.startsWith("66") && value.length === 11) {
+        return {
+            type: "phone",
+            value: "00" + value
+        };
+    }
+
+    if (value.startsWith("0") && value.length === 10) {
+        return {
+            type: "phone",
+            value: "0066" + value.substring(1)
+        };
+    }
+
+    if (value.length === 13) {
+        return {
+            type: "citizen",
+            value: value
+        };
+    }
+
+    return null;
+}
+
+function createPromptPayPayload(promptPayId, amount) {
+
+    const account =
+        normalizePromptPay(promptPayId);
+
+    if (!account) {
+        return null;
+    }
+
+    let merchantAccount = "";
+
+    // AID ของ PromptPay
+    merchantAccount +=
+        tlv("00", "A000000677010111");
+
+    if (account.type === "phone") {
+        merchantAccount +=
+            tlv("01", account.value);
+    } else {
+        merchantAccount +=
+            tlv("02", account.value);
+    }
+
+    let payload = "";
+
+    payload += tlv("00", "01");
+
+    payload += tlv(
+        "29",
+        merchantAccount
+    );
+
+    payload += tlv("53", "764");
+
+    const amountNumber =
+        Number(amount || 0);
+
+    if (amountNumber > 0) {
+        payload += tlv(
+            "54",
+            amountNumber.toFixed(2)
+        );
+    }
+
+    payload += tlv("58", "TH");
+    payload += tlv("59", "IM AROY");
+    payload += tlv("60", "BANGKOK");
+
+    payload += "6304";
+
+    payload += crc16(payload);
+
+    return payload;
+}
+
+function showQR() {
+
+    const total = getCartTotal();
+
+    document.getElementById("qrAmount").textContent =
+        money(total);
+
+    const qrBox =
+        document.getElementById("qrcode");
+
+    const warning =
+        document.getElementById("qrWarning");
+
+    qrBox.innerHTML = "";
+
+    const payload =
+        createPromptPayPayload(
+            PROMPTPAY_ID,
+            total
+        );
+
+    if (!payload) {
+        warning.style.display = "block";
+        document.getElementById("qrModal").classList.add("show");
+        return;
+    }
+
+    warning.style.display = "none";
+
+    if (typeof QRCode === "undefined") {
+        warning.style.display = "block";
+        warning.innerHTML =
+            "ไม่สามารถโหลดตัวสร้าง QR Code ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต";
+        document.getElementById("qrModal").classList.add("show");
+        return;
+    }
+
+    new QRCode(qrBox, {
+        text: payload,
+        width: 240,
+        height: 240,
+        correctLevel: QRCode.CorrectLevel.M
+    });
+
+    document.getElementById("qrModal").classList.add("show");
+}
+
+function closeQR(event) {
+    if (event && event.target !== event.currentTarget) {
+        return;
+    }
+
+    document.getElementById("qrModal").classList.remove("show");
+}
+
+async function confirmOrder() {
+
+    if (!token) {
+        alert("กรุณาเข้าสู่ระบบก่อนสั่งอาหาร");
+        window.location.href = "Users.html";
+        return;
+    }
+
+    if (!currentUser) {
+        alert("ไม่พบข้อมูลผู้ใช้งาน กรุณาเข้าสู่ระบบใหม่");
+        window.location.href = "Users.html";
+        return;
+    }
+
+    if (!cart.length) {
+        alert("ไม่มีสินค้าในตะกร้า");
+        return;
+    }
+
+    const items = buildOrderItems();
+
+    for (const item of items) {
+
+        if (!item.ProductID) {
+            alert("พบรายการสินค้าที่ไม่มี ProductID กรุณากลับไปเลือกสินค้าใหม่");
+            return;
+        }
+
+        if (!item.Size) {
+            alert("กรุณาตรวจสอบขนาดสินค้า");
+            return;
+        }
+
+        if (item.Quantity < 1) {
+            alert("จำนวนสินค้าต้องมากกว่า 0");
+            return;
+        }
+
+        if (item.UnitPrice < 0) {
+            alert("ราคาสินค้าไม่ถูกต้อง");
+            return;
+        }
+    }
+
+    const orderNote =
+        document.getElementById("orderNote")
+            .value.trim();
+
+    const paymentMethod =
+        getPaymentMethod();
+
+    const btn =
+        document.getElementById("confirmBtn");
+
+    if (!confirm("ยืนยันการสั่งซื้อใช่หรือไม่?")) {
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent =
+        "กำลังบันทึกคำสั่งซื้อ...";
+
+    try {
+
+        const response =
+            await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({
+
+                    action: "placeOrder",
+
+                    token: token,
+
+                    items: items,
+
+                    note: orderNote,
+
+                    // Code.gs ใช้ PaymentMethod
+                    PaymentMethod:
+                        paymentMethod
+                })
+            });
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+            throw new Error(
+                result.message ||
+                "ไม่สามารถสั่งซื้อได้"
+            );
+        }
+
+        localStorage.removeItem("foodCart");
+        cart = [];
+
+        showSuccess(result);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            error.message ||
+            "เกิดข้อผิดพลาดในการสั่งซื้อ กรุณาลองใหม่"
+        );
+
+        btn.disabled = false;
+        btn.textContent =
+            "ยืนยันสั่งซื้อ";
+    }
+}
+
+function showSuccess(result) {
+
+    document.getElementById("loading")
+        .style.display = "none";
+
+    document.getElementById("mainContent")
+        .style.display = "none";
+
+    document.getElementById("emptyCart")
+        .style.display = "none";
+
+    document.getElementById("successBox")
+        .style.display = "block";
+
+    document.getElementById("successOrderId")
+        .textContent =
+            result.OrderID || "-";
+
+    document.getElementById("successTotal")
+        .textContent =
+            "ยอดรวม " +
+            money(result.Total || 0);
+}
+
+function goTracking(){
+
+    window.location.href =
+        "OrderTracking.html";
+
+}
+
+window.onload = function() {
+
+    if (!token) {
+        alert("กรุณาเข้าสู่ระบบก่อน");
+        window.location.href = "Users.html";
+        return;
+    }
+
+    currentUser =
+        getCurrentUser();
+
+    cart =
+        getCart();
+
+    showPage();
+};
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานยอดขาย - ร้านอิ่มอร่อย</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Tahoma,sans-serif;background:#f5f7f5;color:#222}
+header{background:#237a45;color:white;padding:20px}
+.header-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:23px;margin:0}
+main{max-width:1100px;margin:24px auto;padding:0 15px}
+button,input,select{font:inherit;padding:10px;border-radius:8px;border:1px solid #ccc}
+button{cursor:pointer}
+.primary{background:#237a45;color:white;border:0}
+.toolbar,.panel,.card{background:white;border:1px solid #e1e7e1;border-radius:12px;padding:16px}
+.toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
+label{display:block;font-size:13px;color:#666;margin-bottom:5px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{min-width:0}
+.card-label{font-size:13px;color:#666}
+.value{font-size:24px;font-weight:bold;margin-top:10px;overflow-wrap:anywhere}
+.panel{margin-top:16px}
+h2{font-size:18px;margin:0 0 14px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{text-align:left;padding:11px 9px;border-bottom:1px solid #eee;font-size:14px}
+th{background:#f1f5f1}
+.num{text-align:right}
+.message{display:none;background:#fff0ef;color:#a12820;padding:12px;border-radius:8px;margin-bottom:15px;white-space:pre-wrap}
+.empty{text-align:center;padding:22px;color:#777}
+.note{font-size:13px;color:#666;margin:12px 0}
+@media(max-width:700px){
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .value{font-size:19px}
+}
+@media print{
+ .toolbar,.no-print,.note,.message{display:none!important}
+ body{background:white}
+ header{background:white;color:black;border-bottom:1px solid #ccc}
+ main{margin:10px auto}
+ .panel,.card{break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>📊 รายงานยอดขาย</h1>
+      <div>ร้านอิ่มอร่อย</div>
+    </div>
+    <button onclick="goBack()">← กลับหน้าแอดมิน</button>
+  </div>
+</header>
+
+<main>
+  <div id="message" class="message"></div>
+
+  <section class="toolbar no-print">
+    <div>
+      <label for="fromDate">ตั้งแต่วันที่</label>
+      <input type="date" id="fromDate">
+    </div>
+    <div>
+      <label for="toDate">ถึงวันที่</label>
+      <input type="date" id="toDate">
+    </div>
+    <div>
+      <label for="statusFilter">สถานะคำสั่งซื้อ</label>
+      <select id="statusFilter">
+        <option value="completed">เฉพาะเสร็จสิ้น</option>
+        <option value="all">ทุกสถานะ</option>
+      </select>
+    </div>
+    <button class="primary" onclick="loadReport()">🔄 โหลดรายงาน</button>
+    <button onclick="window.print()">🖨️ พิมพ์ / PDF</button>
+  </section>
+
+  <section class="cards">
+    <div class="card">
+      <div class="card-label">ยอดขายรวม</div>
+      <div class="value" id="sales">฿0.00</div>
+    </div>
+    <div class="card">
+      <div class="card-label">จำนวนคำสั่งซื้อ</div>
+      <div class="value" id="ordersCount">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">จำนวนสินค้าที่ขาย</div>
+      <div class="value" id="quantity">0</div>
+    </div>
+    <div class="card">
+      <div class="card-label">ยอดเฉลี่ยต่อออเดอร์</div>
+      <div class="value" id="average">฿0.00</div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>สรุปยอดขายรายวัน</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>วันที่</th>
+            <th class="num">จำนวนออเดอร์</th>
+            <th class="num">จำนวนสินค้า</th>
+            <th class="num">ยอดขาย</th>
+          </tr>
+        </thead>
+        <tbody id="dailyRows">
+          <tr><td colspan="4" class="empty">กำลังโหลดข้อมูล...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>รายละเอียดคำสั่งซื้อ</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>เลขที่ออเดอร์</th>
+            <th>วันที่</th>
+            <th>ลูกค้า</th>
+            <th>สถานะ</th>
+            <th class="num">จำนวนสินค้า</th>
+            <th class="num">ยอดรวม</th>
+          </tr>
+        </thead>
+        <tbody id="orderRows">
+          <tr><td colspan="6" class="empty">กำลังโหลดข้อมูล...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="note" id="updated"></p>
+</main>
+
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+
+let allOrders = [];
+
+function getToken(){
+  return sessionStorage.getItem("loginToken") ||
+         localStorage.getItem("loginToken") || "";
+}
+
+function money(value){
+  return "฿" + (Number(value) || 0).toLocaleString("th-TH",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",
+    '"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function orderDate(order){
+  const value = order.OrderDate;
+  if(!value) return null;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+function statusOf(order){
+  return String(order.Status || "").trim();
+}
+
+function isCompleted(order){
+  const status = statusOf(order).toLowerCase();
+  return ["เสร็จสิ้น","สำเร็จ","completed","complete",
+          "success","delivered","done"].includes(status);
+}
+
+function totalOf(order){
+  return Number(order.Total) || 0;
+}
+
+function quantityOf(order){
+  if(!Array.isArray(order.Items)) return 0;
+  return order.Items.reduce((sum,item) =>
+    sum + (Number(item.Quantity) || 0), 0);
+}
+
+function dateKey(date){
+  if(!date) return "";
+  return [
+    date.getFullYear(),
+    String(date.getMonth()+1).padStart(2,"0"),
+    String(date.getDate()).padStart(2,"0")
+  ].join("-");
+}
+
+function displayDate(date){
+  return date ? date.toLocaleString("th-TH") : "-";
+}
+
+async function postAPI(data){
+  const response = await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(data)
+  });
+  if(!response.ok) throw new Error("เชื่อมต่อ API ไม่สำเร็จ");
+  return response.json();
+}
+
+function goBack(){
+  location.href = "AdminDashboard.html";
+}
+
+async function loadReport(){
+  const message = document.getElementById("message");
+  message.style.display = "none";
+
+  try{
+    const token = getToken();
+    if(!token){
+      throw new Error("ไม่พบ Token กรุณาเข้าสู่ระบบแอดมินใหม่");
+    }
+
+    // ตรวจสอบสิทธิ์ก่อนโหลดรายงาน
+    const check = await postAPI({
+      action:"checkAdmin",
+      token:token
+    });
+
+    if(!check.success){
+      throw new Error(check.message || "ไม่มีสิทธิ์แอดมิน");
+    }
+
+    // ใช้ Action เดิมที่ดึงคำสั่งซื้อจาก Google Sheets
+    const result = await postAPI({
+      action:"getAdminOrders",
+      token:token
+    });
+
+    if(!result.success){
+      throw new Error(result.message || "โหลดคำสั่งซื้อไม่สำเร็จ");
+    }
+
+    if(!Array.isArray(result.orders)){
+      throw new Error("API ไม่ได้ส่งรายการคำสั่งซื้อกลับมาใน result.orders");
+    }
+
+    allOrders = result.orders;
+    renderReport();
+
+    document.getElementById("updated").textContent =
+      "อัปเดตล่าสุด: " + new Date().toLocaleString("th-TH");
+
+  }catch(error){
+    message.textContent = error.message || "เกิดข้อผิดพลาด";
+    message.style.display = "block";
+  }
+}
+
+function renderReport(){
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+  const showAll = document.getElementById("statusFilter").value === "all";
+
+  const list = allOrders.filter(order => {
+    const date = orderDate(order);
+    const key = dateKey(date);
+
+    if((from || to) && !date) return false;
+    if(from && key < from) return false;
+    if(to && key > to) return false;
+
+    return showAll || isCompleted(order);
+  });
+
+  const sales = list.reduce((sum,o) => sum + totalOf(o), 0);
+  const quantity = list.reduce((sum,o) => sum + quantityOf(o), 0);
+
+  document.getElementById("sales").textContent = money(sales);
+  document.getElementById("ordersCount").textContent = list.length;
+  document.getElementById("quantity").textContent = quantity;
+  document.getElementById("average").textContent =
+    money(list.length ? sales / list.length : 0);
+
+  const daily = {};
+
+  list.forEach(order => {
+    const key = dateKey(orderDate(order)) || "ไม่ทราบวันที่";
+    if(!daily[key]) daily[key] = {count:0, quantity:0, sales:0};
+
+    daily[key].count++;
+    daily[key].quantity += quantityOf(order);
+    daily[key].sales += totalOf(order);
+  });
+
+  const days = Object.entries(daily)
+    .sort((a,b) => b[0].localeCompare(a[0]));
+
+  document.getElementById("dailyRows").innerHTML = days.length
+    ? days.map(([day,value]) => `
+      <tr>
+        <td>${escapeHTML(day)}</td>
+        <td class="num">${value.count}</td>
+        <td class="num">${value.quantity}</td>
+        <td class="num">${money(value.sales)}</td>
+      </tr>
+    `).join("")
+    : '<tr><td colspan="4" class="empty">ไม่มีข้อมูลในช่วงวันที่ที่เลือก</td></tr>';
+
+  const sorted = [...list].sort((a,b) =>
+    (orderDate(b)?.getTime() || 0) -
+    (orderDate(a)?.getTime() || 0)
+  );
+
+  document.getElementById("orderRows").innerHTML = sorted.length
+    ? sorted.map(order => `
+      <tr>
+        <td>${escapeHTML(order.OrderID || "-")}</td>
+        <td>${escapeHTML(displayDate(orderDate(order)))}</td>
+        <td>${escapeHTML(order.CustomerName || order.CustomerEmail || "-")}</td>
+        <td>${escapeHTML(statusOf(order) || "-")}</td>
+        <td class="num">${quantityOf(order)}</td>
+        <td class="num">${money(totalOf(order))}</td>
+      </tr>
+    `).join("")
+    : '<tr><td colspan="6" class="empty">ไม่มีคำสั่งซื้อในช่วงวันที่ที่เลือก</td></tr>';
+}
+
+document.getElementById("statusFilter")
+  .addEventListener("change",renderReport);
+document.getElementById("fromDate")
+  .addEventListener("change",renderReport);
+document.getElementById("toDate")
+  .addEventListener("change",renderReport);
+
+// ค่าเริ่มต้นเป็นวันที่ 1 ของเดือนจนถึงวันนี้
+(function(){
+  const today = new Date();
+  const fmt = dateKey;
+  document.getElementById("toDate").value = fmt(today);
+  document.getElementById("fromDate").value =
+    fmt(new Date(today.getFullYear(),today.getMonth(),1));
+})();
+
+loadReport();
+</script>
+</body>
+</html>
