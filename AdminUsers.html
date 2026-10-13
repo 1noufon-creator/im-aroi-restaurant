@@ -17,7 +17,7 @@
   <section class="card"><div id="message" class="notice muted">กำลังโหลดสมาชิก…</div><div class="tablewrap"><table><thead><tr><th>ชื่อสมาชิก</th><th>อีเมล</th><th>สถานะ</th><th>สิทธิ์</th><th>จัดการ</th></tr></thead><tbody id="membersBody"></tbody></table></div><div class="footer"><span id="count" class="muted"></span><span class="muted">ข้อมูลสมาชิกมาจาก Google Sheets: Users</span></div></section>
 </main>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxrnGKc8TtiGDTnMIuP4AZWYGSI-6e4i6G4WjiK31vXtGx_onbioYelPvLq0U0ofuA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
 let members = [];
 const token = sessionStorage.getItem("loginToken") || localStorage.getItem("loginToken") || "";
 const currentUser = (()=>{try{return JSON.parse(sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser") || "{}")}catch(e){return {}}})();
