@@ -506,6 +506,8 @@ h1{
 
 <main>
 
+    <div id="storeStatusBanner" role="status" style="display:none;margin:0 0 18px;padding:14px 16px;border-radius:10px;font-weight:bold"></div>
+
     <div class="top">
 
         <div>
@@ -733,6 +735,7 @@ let picked = null;
 let size = null;
 let qtyValue = 1;
 let cat = "ALL";
+let storeIsOpen = true;
 
 
 const token =
@@ -805,6 +808,8 @@ window.onload = async function() {
 
     loadCart();
 
+    await loadStoreStatus();
+
     // โหลดชื่อหมวดหมู่ก่อน
     await loadCategories();
 
@@ -812,6 +817,40 @@ window.onload = async function() {
     await loadProducts();
 };
 
+
+/* ================= STORE STATUS ================= */
+async function loadStoreStatus() {
+    const banner = document.getElementById("storeStatusBanner");
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "getStoreStatus" })
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "ตรวจสอบสถานะร้านไม่ได้");
+        storeIsOpen = result.isOpen !== false;
+    } catch (error) {
+        // หากตรวจสอบสถานะไม่ได้ ไม่ควรปิดกั้นเมนูโดยไม่จำเป็น แต่ backend ยังตรวจซ้ำตอนสั่งซื้อ
+        console.error("ตรวจสอบสถานะร้านไม่สำเร็จ:", error);
+        storeIsOpen = true;
+    }
+    banner.style.display = "block";
+    banner.style.background = storeIsOpen ? "#e8f5e9" : "#ffebee";
+    banner.style.color = storeIsOpen ? "#1b5e20" : "#b71c1c";
+    banner.textContent = storeIsOpen
+        ? "🟢 ตอนนี้ร้านเปิด รับคำสั่งซื้อได้"
+        : "🔴 ตอนนี้ร้านปิด ยังไม่สามารถสั่งอาหารได้";
+    const checkout = document.querySelector(".checkout");
+    if (checkout) {
+        checkout.disabled = !storeIsOpen;
+        checkout.textContent = storeIsOpen ? "ไปหน้าสรุปคำสั่งซื้อ" : "ร้านปิดอยู่";
+        checkout.style.opacity = storeIsOpen ? "1" : ".6";
+        checkout.style.cursor = storeIsOpen ? "pointer" : "not-allowed";
+    }
+    const addButton = document.getElementById("add");
+    if (addButton && !storeIsOpen) addButton.disabled = true;
+}
 
 /* ================= PRODUCTS ================= */
 
@@ -1277,7 +1316,8 @@ function render(){
 
 
         b.disabled =
-            !available.length;
+            !available.length || !storeIsOpen;
+        if (!storeIsOpen) b.textContent = "ร้านปิดอยู่";
 
 
         b.onclick =
@@ -1302,6 +1342,11 @@ function render(){
 /* ================= SIZE MODAL ================= */
 
 function openModal(id){
+
+    if (!storeIsOpen) {
+        alert("ตอนนี้ร้านปิด ไม่สามารถสั่งอาหารได้");
+        return;
+    }
 
     const vs =
         products.filter(
@@ -1536,6 +1581,7 @@ function updateModal(){
     document.getElementById(
         "add"
     ).disabled =
+        !storeIsOpen ||
         !picked ||
         !(Number(picked.Stock) > 0);
 
@@ -1557,6 +1603,10 @@ function closeModal(){
 
 function addCart(){
 
+    if (!storeIsOpen) {
+        alert("ตอนนี้ร้านปิด ไม่สามารถสั่งอาหารได้");
+        return;
+    }
     if(!picked) return;
 
 
@@ -1885,6 +1935,11 @@ function closeCart(){
 /* ================= ORDER SUMMARY ================= */
 
 function summary(){
+
+    if (!storeIsOpen) {
+        alert("ตอนนี้ร้านปิด ไม่สามารถสั่งอาหารได้");
+        return;
+    }
 
     if(!cart.length){
 
