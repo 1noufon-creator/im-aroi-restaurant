@@ -1,1119 +1,449 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>จัดการคำสั่งซื้อ - ร้านอิ่มอร่อย</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>จัดการคำสั่งซื้อ | ร้านอิ่มอร่อย</title>
 
 <style>
-
-* {
-    box-sizing: border-box;
+:root {
+    --primary: #198754;
+    --primary-dark: #146c43;
+    --bg: #f5f7f6;
+    --card: #ffffff;
+    --text: #202923;
+    --muted: #718078;
+    --border: #e5ebe7;
+    --shadow: 0 8px 28px rgba(24, 55, 38, .07);
 }
-
+* { box-sizing: border-box; }
 body {
     margin: 0;
-    font-family: Arial, "Noto Sans Thai", sans-serif;
-    background: #f5f5f5;
-    color: #222;
+    font-family: "Noto Sans Thai", Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
 }
-
-/* =========================
-   HEADER
-========================= */
-
+button { font: inherit; cursor: pointer; }
 .header {
-    background: #222;
+    background: linear-gradient(120deg, #173f2b, #198754);
     color: white;
-    padding: 15px 22px;
+    padding: 17px 22px;
+    box-shadow: 0 4px 18px rgba(20, 70, 43, .18);
 }
-
 .header-inner {
     max-width: 1200px;
     margin: auto;
-
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    gap: 10px;
+    justify-content: space-between;
+    gap: 14px;
 }
-
-.logo {
-    font-size: 21px;
-    font-weight: bold;
-}
-
-.header-actions {
-    display: flex;
-    gap: 8px;
-}
-
+.logo { font-size: 20px; font-weight: 800; }
+.header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .header-btn {
-    background: #333;
+    border: 1px solid rgba(255,255,255,.35);
+    background: rgba(255,255,255,.12);
     color: white;
-
-    border: 1px solid #666;
-
-    border-radius: 8px;
-
+    border-radius: 10px;
     padding: 9px 13px;
-
-    cursor: pointer;
 }
+.header-btn:hover { background: rgba(255,255,255,.22); }
 
-/* =========================
-   CONTAINER
-========================= */
-
-.container {
-    max-width: 1200px;
-    margin: 22px auto;
-    padding: 0 15px;
-}
-
+.container { max-width: 1200px; margin: 28px auto; padding: 0 18px 40px; }
 .title-row {
-
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    margin-bottom: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
 }
-
-.title-row h1 {
-    margin: 0;
-    font-size: 28px;
+.title-row h1 { margin: 0; font-size: 28px; }
+.title-row p { color: var(--muted); margin: 7px 0 0; }
+.title-actions { display: flex; gap: 9px; flex-wrap: wrap; }
+.btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 15px;
+    font-weight: 700;
+    transition: .18s ease;
 }
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-light { background: white; color: var(--text); border: 1px solid var(--border); }
+.btn-sound.enabled { background: #e2f5e9; color: #146c43; border: 1px solid #b8e2c8; }
 
-.title-row p {
-    margin: 5px 0 0;
-    color: #666;
+.sound-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 9px;
 }
-
-.refresh-btn {
-
-    background: #222;
-
-    color: white;
-
-    border: none;
-
-    border-radius: 8px;
-
-    padding: 10px 15px;
-
-    cursor: pointer;
-}
-
-/* =========================
-   STAT
-========================= */
+.sound-dot { width: 8px; height: 8px; border-radius: 50%; background: #adb5bd; }
+.sound-dot.on { background: #20a464; box-shadow: 0 0 0 4px #dff5e7; }
 
 .stats {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 14px;
-
-    margin-bottom: 18px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
 }
-
 .stat {
-
-    background: white;
-
-    border: 1px solid #ddd;
-
-    border-radius: 12px;
-
-    padding: 17px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 19px;
+    box-shadow: var(--shadow);
 }
-
-.stat-label {
-
-    font-size: 14px;
-
-    color: #666;
+.stat-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.stat-label { color: var(--muted); font-size: 14px; }
+.stat-icon {
+    width: 38px; height: 38px; display: grid; place-items: center;
+    border-radius: 12px; background: #e8f6ed; font-size: 19px;
 }
-
-.stat-number {
-
-    font-size: 28px;
-
-    font-weight: bold;
-
-    margin-top: 6px;
-}
-
-/* =========================
-   FILTER
-========================= */
+.stat-number { font-size: 30px; font-weight: 800; margin-top: 10px; }
 
 .filters {
-
-    display: flex;
-
-    gap: 8px;
-
-    flex-wrap: wrap;
-
-    background: white;
-
-    border: 1px solid #ddd;
-
-    border-radius: 12px;
-
-    padding: 13px;
-
-    margin-bottom: 18px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    background: white; border: 1px solid var(--border);
+    padding: 12px; border-radius: 14px; margin-bottom: 18px;
 }
-
 .filter-btn {
-
-    background: white;
-
-    border: 1px solid #ccc;
-
-    border-radius: 8px;
-
-    padding: 9px 13px;
-
-    cursor: pointer;
+    background: white; color: #58665e;
+    border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 14px;
 }
+.filter-btn.active { background: #e5f5eb; color: #146c43; border-color: #b9e4c8; font-weight: 800; }
 
-.filter-btn.active {
-
-    background: #222;
-
-    color: white;
-
-    border-color: #222;
-}
-
-/* =========================
-   ORDER
-========================= */
-
-.order-list {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14px;
-}
-
+.order-list { display: flex; flex-direction: column; gap: 15px; }
 .order-card {
-
-    background: white;
-
-    border: 1px solid #ddd;
-
-    border-radius: 12px;
-
-    overflow: hidden;
+    background: white; border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
 }
-
 .order-head {
-
-    padding: 15px 18px;
-
-    border-bottom: 1px solid #eee;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 12px;
+    padding: 17px 20px; display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 14px; border-bottom: 1px solid var(--border);
 }
-
-.order-id {
-
-    font-size: 18px;
-
-    font-weight: bold;
-}
-
-.customer {
-
-    margin-top: 5px;
-
-    color: #444;
-}
-
-.order-date {
-
-    margin-top: 4px;
-
-    color: #777;
-
-    font-size: 13px;
-}
-
-/* =========================
-   STATUS
-========================= */
-
+.order-id { font-weight: 800; font-size: 18px; overflow-wrap: anywhere; }
+.customer { margin-top: 7px; font-weight: 600; }
+.order-date { color: var(--muted); font-size: 13px; margin-top: 5px; overflow-wrap: anywhere; }
 .status {
-
-    display: inline-block;
-
-    padding: 6px 11px;
-
-    border-radius: 20px;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 30px; padding: 7px 12px;
+    font-size: 12px; font-weight: 800; white-space: nowrap;
 }
+.status-new { background: #fff2cc; color: #875c00; }
+.status-making { background: #e0edff; color: #1857a6; }
+.status-ready { background: #d9f5e5; color: #176b3b; }
+.status-done { background: #edf0ee; color: #536158; }
 
-.status-new {
-
-    background: #fff3cd;
-
-    color: #664d03;
-}
-
-.status-making {
-
-    background: #cfe2ff;
-
-    color: #084298;
-}
-
-.status-ready {
-
-    background: #d1e7dd;
-
-    color: #0f5132;
-}
-
-.status-done {
-
-    background: #e2e3e5;
-
-    color: #41464b;
-}
-
-/* =========================
-   ITEMS
-========================= */
-
-.order-body {
-
-    padding: 14px 18px;
-}
-
+.order-body { padding: 12px 20px; }
 .item {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 12px;
-
-    padding: 10px 0;
-
-    border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 14px; padding: 12px 0; border-bottom: 1px solid #eef1ef;
 }
-
-.item:last-child {
-
-    border-bottom: none;
-}
-
-.item-name {
-
-    font-weight: bold;
-}
-
-.item-detail {
-
-    font-size: 14px;
-
-    color: #666;
-
-    margin-top: 4px;
-}
-
-.item-total {
-
-    font-weight: bold;
-
-    white-space: nowrap;
-}
-
-/* =========================
-   BOTTOM
-========================= */
-
+.item:last-child { border-bottom: 0; }
+.item-name { font-weight: 700; }
+.item-detail { font-size: 13px; color: var(--muted); margin-top: 5px; line-height: 1.7; }
+.item-total { font-weight: 800; white-space: nowrap; }
 .order-bottom {
-
-    border-top: 1px solid #eee;
-
-    padding: 14px 18px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 12px;
-
-    flex-wrap: wrap;
+    border-top: 1px solid var(--border); padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 14px; flex-wrap: wrap; background: #fcfdfc;
 }
-
-.payment {
-
-    font-size: 14px;
-
-    color: #555;
-
-    margin-bottom: 4px;
+.payment { font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+.total { font-size: 23px; font-weight: 800; color: var(--primary-dark); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.action-btn, .detail-btn {
+    border: 1px solid var(--border); border-radius: 9px;
+    padding: 9px 12px; background: white; color: var(--text); font-weight: 700;
 }
+.action-btn.primary { background: var(--primary); border-color: var(--primary); color: white; }
+.action-btn.primary:hover { background: var(--primary-dark); }
 
-.total {
-
-    font-size: 20px;
-
-    font-weight: bold;
+.detail { display: none; padding: 16px 20px; background: #f8faf8; border-top: 1px solid var(--border); }
+.detail.show { display: block; }
+.info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; font-size: 14px; }
+.note { background: #fff7dc; border: 1px solid #f2dfa0; border-radius: 10px; padding: 12px; margin-top: 14px; }
+.loading, .empty { text-align: center; padding: 45px 18px; color: var(--muted); }
+.error { color: #b42318; }
+.toast {
+    position: fixed; z-index: 9999; bottom: 22px; right: 22px;
+    max-width: min(390px, calc(100vw - 32px));
+    background: #173f2b; color: white; padding: 15px 18px;
+    border-radius: 14px; box-shadow: 0 12px 35px rgba(0,0,0,.2);
+    opacity: 0; transform: translateY(12px); pointer-events: none;
+    transition: .25s ease;
 }
-
-.actions {
-
-    display: flex;
-
-    gap: 8px;
-
-    flex-wrap: wrap;
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast strong { display: block; margin-bottom: 4px; }
+@media(max-width:760px) {
+    .header-inner { align-items: flex-start; flex-direction: column; }
+    .logo { font-size: 17px; }
+    .container { margin-top: 20px; padding: 0 12px 30px; }
+    .title-row h1 { font-size: 24px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .stat { padding: 14px; }
+    .stat-number { font-size: 25px; }
+    .order-head { flex-direction: column; padding: 15px; }
+    .order-body, .order-bottom, .detail { padding-left: 15px; padding-right: 15px; }
+    .order-bottom { align-items: flex-start; flex-direction: column; }
+    .info-grid { grid-template-columns: 1fr; }
+    .title-actions { width: 100%; }
+    .title-actions .btn { flex: 1; }
 }
-
-.action-btn,
-.detail-btn {
-
-    background: white;
-
-    border: 1px solid #ccc;
-
-    border-radius: 8px;
-
-    padding: 9px 12px;
-
-    cursor: pointer;
-}
-
-.action-btn.primary {
-
-    background: #222;
-
-    color: white;
-
-    border-color: #222;
-}
-
-/* =========================
-   DETAIL
-========================= */
-
-.detail {
-
-    display: none;
-
-    background: #fafafa;
-
-    border-top: 1px solid #eee;
-
-    padding: 14px 18px;
-}
-
-.detail.show {
-
-    display: block;
-}
-
-.info-grid {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 8px;
-
-    font-size: 14px;
-}
-
-.note {
-
-    background: #fff8e1;
-
-    border: 1px solid #ffe082;
-
-    border-radius: 8px;
-
-    padding: 10px;
-
-    margin-top: 10px;
-}
-
-.loading,
-.empty {
-
-    text-align: center;
-
-    padding: 45px;
-
-    color: #777;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-@media(max-width:750px) {
-
-    .stats {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .title-row {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        gap: 10px;
-    }
-
-    .order-head {
-
-        flex-direction: column;
-    }
-
-    .info-grid {
-
-        grid-template-columns: 1fr;
-    }
-}
-
 </style>
-
 </head>
 
-
 <body>
-
-
-<!-- =========================
-     HEADER
-========================= -->
-
 <header class="header">
-
     <div class="header-inner">
-
-        <div class="logo">
-            🍔 ร้านอิ่มอร่อย — จัดการคำสั่งซื้อ
-        </div>
-
+        <div class="logo">🍔 ร้านอิ่มอร่อย <span style="font-weight:400;opacity:.85">/ จัดการคำสั่งซื้อ</span></div>
         <div class="header-actions">
-
-            <button
-                class="header-btn"
-                onclick="goDashboard()">
-
-                แดชบอร์ด
-
-            </button>
-
-            <button
-                class="header-btn"
-                onclick="logout()">
-
-                ออกจากระบบ
-
-            </button>
-
+            <button class="header-btn" onclick="goDashboard()">⌂ แดชบอร์ด</button>
+            <button class="header-btn" onclick="logout()">ออกจากระบบ ↗</button>
         </div>
-
     </div>
-
 </header>
 
-
-
 <main class="container">
-
-
-<!-- =========================
-     TITLE
-========================= -->
-
-<div class="title-row">
-
-    <div>
-
-        <h1>
-            📦 คำสั่งซื้อ
-        </h1>
-
-        <p id="adminName">
-            กำลังตรวจสอบสิทธิ์...
-        </p>
-
+    <div class="title-row">
+        <div>
+            <h1>📦 คำสั่งซื้อ</h1>
+            <p id="adminName">กำลังตรวจสอบสิทธิ์...</p>
+            <div class="sound-state">
+                <span id="soundDot" class="sound-dot"></span>
+                <span id="soundStatus">ยังไม่ได้เปิดเสียงแจ้งเตือน</span>
+            </div>
+        </div>
+        <div class="title-actions">
+            <button class="btn btn-light" onclick="loadOrders()">↻ รีเฟรช</button>
+            <button class="btn btn-primary btn-sound" id="soundButton" onclick="enableOrderSound()">🔔 เปิดเสียงแจ้งเตือน</button>
+        </div>
     </div>
 
-<div id="orderNotice"
-     style="display:none; padding:12px; margin:12px 0;
-            background:#fff3cd; border-radius:8px; font-weight:bold;">
-</div>
-
-<button type="button" class="refresh-btn" onclick="enableOrderSound()">
-    🔔 เปิดเสียงแจ้งเตือน
-</button>
-
-
-    <button
-        class="refresh-btn"
-        onclick="loadOrders()">
-
-        🔄 รีเฟรช
-
-    </button>
-
-</div>
-
-
-
-<!-- =========================
-     STAT
-========================= -->
-
-<div class="stats">
-
-
-    <div class="stat">
-
-        <div class="stat-label">
-            ออเดอร์ทั้งหมด
-        </div>
-
-        <div
-            class="stat-number"
-            id="statAll">
-
-            0
-
-        </div>
-
-    </div>
-
-
-
-    <div class="stat">
-
-        <div class="stat-label">
-            รับออเดอร์แล้ว
-        </div>
-
-        <div
-            class="stat-number"
-            id="statNew">
-
-            0
-
-        </div>
-
-    </div>
-
-
-
-    <div class="stat">
-
-        <div class="stat-label">
-            กำลังทำ
-        </div>
-
-        <div
-            class="stat-number"
-            id="statMaking">
-
-            0
-
-        </div>
-
-    </div>
-
-
-
-    <div class="stat">
-
-        <div class="stat-label">
-            พร้อมรับ
-        </div>
-
-        <div
-            class="stat-number"
-            id="statReady">
-
-            0
-
-        </div>
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =========================
-     FILTER
-========================= -->
-
-<div class="filters">
-
-
-    <button
-        class="filter-btn active"
-        onclick="setFilter('ALL',this)">
-
-        ทั้งหมด
-
-    </button>
-
-
-    <button
-        class="filter-btn"
-        onclick="setFilter('รับออเดอร์แล้ว',this)">
-
-        รับออเดอร์แล้ว
-
-    </button>
-
-
-    <button
-        class="filter-btn"
-        onclick="setFilter('กำลังทำ',this)">
-
-        กำลังทำ
-
-    </button>
-
-
-    <button
-        class="filter-btn"
-        onclick="setFilter('พร้อมรับ',this)">
-
-        พร้อมรับ
-
-    </button>
-
-
-    <button
-        class="filter-btn"
-        onclick="setFilter('เสร็จสิ้น',this)">
-
-        เสร็จสิ้น
-
-    </button>
-
-
-</div>
-
-
-
-<!-- =========================
-     ORDER LIST
-========================= -->
-
-<div
-    id="loading"
-    class="loading">
-
-    กำลังโหลดคำสั่งซื้อ...
-
-</div>
-
-
-<div
-    id="orderList"
-    class="order-list"
-    style="display:none">
-
-</div>
-
-
+    <section class="stats">
+        <div class="stat"><div class="stat-top"><span class="stat-label">ออเดอร์ทั้งหมด</span><span class="stat-icon">📋</span></div><div class="stat-number" id="statAll">0</div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">รับออเดอร์แล้ว</span><span class="stat-icon">🛎️</span></div><div class="stat-number" id="statNew">0</div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">กำลังทำ</span><span class="stat-icon">🍳</span></div><div class="stat-number" id="statMaking">0</div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">พร้อมรับ</span><span class="stat-icon">✅</span></div><div class="stat-number" id="statReady">0</div></div>
+    </section>
+
+    <nav class="filters">
+        <button class="filter-btn active" onclick="setFilter('ALL',this)">ทั้งหมด</button>
+        <button class="filter-btn" onclick="setFilter('รับออเดอร์แล้ว',this)">🛎️ รับออเดอร์แล้ว</button>
+        <button class="filter-btn" onclick="setFilter('กำลังทำ',this)">🍳 กำลังทำ</button>
+        <button class="filter-btn" onclick="setFilter('พร้อมรับ',this)">✅ พร้อมรับ</button>
+        <button class="filter-btn" onclick="setFilter('เสร็จสิ้น',this)">เสร็จสิ้น</button>
+    </nav>
+
+    <div id="loading" class="loading">กำลังโหลดคำสั่งซื้อ...</div>
+    <div id="orderList" class="order-list" style="display:none"></div>
 </main>
 
-
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
+"use strict";
 
-
-// =====================================================
-// API
-// =====================================================
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
-
-
-const token =
-    sessionStorage.getItem("loginToken") ||
-    localStorage.getItem("loginToken");
-
+// URL Google Apps Script ของระบบเดิม
+const API_URL = "https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
+const token = sessionStorage.getItem("loginToken") || localStorage.getItem("loginToken");
 
 let orders = [];
-
 let currentFilter = "ALL";
-let knownOrderIds = null;
-let pollInProgress = false;
 let orderAudioContext = null;
+let knownOrderIds = null;
+let orderPollingStarted = false;
+let pollInProgress = false;
+let toastTimer = null;
 
-function enableOrderSound() {
+function safe(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function money(value) {
+    return "฿" + Number(value || 0).toLocaleString("th-TH", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function statusClass(status) {
+    if (status === "รับออเดอร์แล้ว") return "status-new";
+    if (status === "กำลังทำ") return "status-making";
+    if (status === "พร้อมรับ") return "status-ready";
+    return "status-done";
+}
+
+function showToast(title, message) {
+    const toast = document.getElementById("toast");
+    toast.innerHTML = "<strong>" + safe(title) + "</strong><span>" + safe(message) + "</span>";
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 5000);
+}
+
+// ต้องกดปุ่มนี้จากผู้ใช้ก่อน เบราว์เซอร์จึงจะอนุญาตให้เล่นเสียง
+async function enableOrderSound() {
     try {
-        const AudioContextClass =
-            window.AudioContext || window.webkitAudioContext;
-
-        if (!AudioContextClass) {
-            alert("เบราว์เซอร์นี้ไม่รองรับเสียงแจ้งเตือน");
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) {
+            alert("เบราว์เซอร์นี้ไม่รองรับระบบเสียง กรุณาใช้ Chrome หรือ Edge รุ่นปัจจุบัน");
             return;
         }
 
-        if (!orderAudioContext) {
-            orderAudioContext = new AudioContextClass();
+        if (!orderAudioContext) orderAudioContext = new AudioCtx();
+        if (orderAudioContext.state === "suspended") await orderAudioContext.resume();
+
+        if (orderAudioContext.state !== "running") {
+            throw new Error("เบราว์เซอร์ยังไม่อนุญาตให้เล่นเสียง");
         }
 
-        orderAudioContext.resume().then(() => {
-            playOrderSound();
-            alert("เปิดเสียงแจ้งเตือนแล้ว");
-        });
+        playOrderSound();
+
+        document.getElementById("soundButton").textContent = "🔔 เปิดเสียงแล้ว";
+        document.getElementById("soundButton").classList.add("enabled");
+        document.getElementById("soundDot").classList.add("on");
+        document.getElementById("soundStatus").textContent = "เปิดเสียงแล้ว — กำลังรอคำสั่งซื้อใหม่";
+        showToast("เปิดเสียงแจ้งเตือนแล้ว", "ระบบจะแจ้งเตือนเมื่อพบคำสั่งซื้อใหม่");
     } catch (error) {
-        alert("เปิดเสียงไม่สำเร็จ กรุณาตรวจสอบการตั้งค่าเสียงของเบราว์เซอร์");
+        console.error("เปิดเสียงไม่สำเร็จ:", error);
+        alert("เปิดเสียงไม่สำเร็จ กรุณาคลิกปุ่มอีกครั้ง และตรวจสอบเสียงคอมพิวเตอร์");
     }
 }
 
 function playOrderSound() {
-    if (!orderAudioContext ||
-        orderAudioContext.state !== "running") {
-        return;
-    }
+    if (!orderAudioContext || orderAudioContext.state !== "running") return;
 
-    const oscillator = orderAudioContext.createOscillator();
-    const gain = orderAudioContext.createGain();
+    // เสียงเตือน 3 จังหวะ
+    [0, 0.24, 0.48].forEach(offset => {
+        const startAt = orderAudioContext.currentTime + offset;
+        const oscillator = orderAudioContext.createOscillator();
+        const gain = orderAudioContext.createGain();
 
-    oscillator.type = "sine";
-    oscillator.frequency.value = 880;
-    gain.gain.value = 0.2;
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, startAt);
+        oscillator.frequency.setValueAtTime(660, startAt + 0.12);
 
-    oscillator.connect(gain);
-    gain.connect(orderAudioContext.destination);
+        gain.gain.setValueAtTime(0.001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.25, startAt + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.001, startAt + 0.20);
 
-    oscillator.start();
-
-    gain.gain.setValueAtTime(0.2, orderAudioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        orderAudioContext.currentTime + 0.6
-    );
-
-    oscillator.stop(orderAudioContext.currentTime + 0.6);
+        oscillator.connect(gain);
+        gain.connect(orderAudioContext.destination);
+        oscillator.start(startAt);
+        oscillator.stop(startAt + 0.22);
+    });
 }
 
 function notifyNewOrders(newOrders) {
     if (!newOrders.length) return;
 
-    const notice = document.getElementById("orderNotice");
-
-    notice.style.display = "block";
-    notice.textContent =
-        "🔔 มีคำสั่งซื้อใหม่ " + newOrders.length + " รายการ!";
-
     playOrderSound();
+    showToast("🔔 มีคำสั่งซื้อใหม่!", "พบคำสั่งซื้อใหม่ " + newOrders.length + " รายการ");
+    console.info("พบคำสั่งซื้อใหม่:", newOrders);
 }
 
-
-
-// =====================================================
-// ป้องกัน HTML Injection
-// =====================================================
-
-function safe(value) {
-
-    return String(value ?? "")
-
-        .replace(/&/g, "&amp;")
-
-        .replace(/</g, "&lt;")
-
-        .replace(/>/g, "&gt;")
-
-        .replace(/"/g, "&quot;")
-
-        .replace(/'/g, "&#039;");
+async function apiRequest(payload) {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+    });
+    return await response.json();
 }
-
-
-
-// =====================================================
-// เงิน
-// =====================================================
-
-function money(value) {
-
-    return "฿" +
-        Number(value || 0)
-        .toLocaleString("th-TH", {
-
-            minimumFractionDigits: 2,
-
-            maximumFractionDigits: 2
-
-        });
-
-}
-
-
-
-// =====================================================
-// สีสถานะ
-// =====================================================
-
-function statusClass(status) {
-
-    if (status === "รับออเดอร์แล้ว")
-        return "status-new";
-
-    if (status === "กำลังทำ")
-        return "status-making";
-
-    if (status === "พร้อมรับ")
-        return "status-ready";
-
-    return "status-done";
-}
-
-
-
-// =====================================================
-// ตรวจสอบ Admin
-// =====================================================
 
 async function checkAdmin() {
-
-
     if (!token) {
-
-        window.location.href =
-            "Users.html";
-
+        window.location.href = "Users.html";
         return;
     }
 
-
     try {
+        const result = await apiRequest({ action: "checkAdmin", token });
+        if (!result.success) throw new Error(result.message || "ไม่มีสิทธิ์เข้าใช้งาน");
 
-
-        const response = await fetch(
-
-            API_URL,
-
-            {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type":
-                    "text/plain;charset=utf-8"
-                },
-
-                body: JSON.stringify({
-
-                    action: "checkAdmin",
-
-                    token: token
-
-                })
-
-            }
-
-        );
-
-
-        const result =
-            await response.json();
-
-
-        if (!result.success) {
-
-            throw new Error(
-                result.message ||
-                "ไม่มีสิทธิ์เข้าใช้งาน"
-            );
-        }
-
-
-        const user =
-            result.user || {};
-
-
-        document.getElementById(
-            "adminName"
-        ).textContent =
-            "ผู้ดูแลระบบ: " +
-            (
-                user.Name ||
-                user.Email ||
-                "Admin"
-            );
-
+        const user = result.user || {};
+        document.getElementById("adminName").textContent =
+            "ผู้ดูแลระบบ: " + (user.Name || user.Email || "Admin");
 
         await loadOrders();
         startOrderPolling();
-
-
+    } catch (error) {
+        console.error("ตรวจสอบสิทธิ์ไม่สำเร็จ:", error);
+        sessionStorage.removeItem("loginToken");
+        localStorage.removeItem("loginToken");
+        alert(error.message || "ไม่สามารถตรวจสอบสิทธิ์ได้");
+        window.location.href = "Users.html";
     }
-    catch (error) {
-
-
-        sessionStorage.removeItem(
-            "loginToken"
-        );
-
-        localStorage.removeItem(
-            "loginToken"
-        );
-
-
-        alert(
-            error.message ||
-            "ไม่มีสิทธิ์เข้าใช้งาน"
-        );
-
-
-        window.location.href =
-            "Users.html";
-
-    }
-
 }
-
-
-
-// =====================================================
-// โหลด Orders
-// =====================================================
-
 
 async function loadOrders(isPolling = false) {
     const loading = document.getElementById("loading");
     const list = document.getElementById("orderList");
 
-    // ไม่ทำให้หน้ารายการกระพริบระหว่างตรวจสอบอัตโนมัติ
     if (!isPolling) {
         loading.style.display = "block";
+        loading.classList.remove("error");
         loading.textContent = "กำลังโหลดคำสั่งซื้อ...";
         list.style.display = "none";
     }
 
     try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-            },
-            body: JSON.stringify({
-                action: "getAdminOrders",
-                token: token
-            })
-        });
+        const result = await apiRequest({ action: "getAdminOrders", token });
 
-        // ต้องอ่านผลตอบกลับก่อนใช้งาน result
-        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "โหลดคำสั่งซื้อไม่สำเร็จ");
 
-        if (!result.success) {
-            throw new Error(
-                result.message || "โหลดคำสั่งซื้อไม่สำเร็จ"
-            );
-        }
-
-        const fetchedOrders = Array.isArray(result.orders)
-            ? result.orders
-            : [];
-
-        // ตรวจหาออเดอร์ใหม่ เฉพาะหลังจากโหลดข้อมูลครั้งแรกแล้ว
+        const fetchedOrders = Array.isArray(result.orders) ? result.orders : [];
         let newOrders = [];
 
+        // ครั้งแรกบันทึก ID ที่มีอยู่เป็นฐาน จะไม่แจ้งเตือนออเดอร์เก่า
         if (knownOrderIds !== null) {
             newOrders = fetchedOrders.filter(order =>
-                order.OrderID &&
-                !knownOrderIds.has(String(order.OrderID))
+                order.OrderID && !knownOrderIds.has(String(order.OrderID))
             );
         }
 
         knownOrderIds = new Set(
-            fetchedOrders
-                .filter(order => order.OrderID)
+            fetchedOrders.filter(order => order.OrderID)
                 .map(order => String(order.OrderID))
         );
 
         orders = fetchedOrders;
-
-        if (newOrders.length > 0) {
-            notifyNewOrders(newOrders);
-        }
-
         updateStats();
         renderOrders();
 
         loading.style.display = "none";
         list.style.display = "flex";
 
+        if (newOrders.length) notifyNewOrders(newOrders);
     } catch (error) {
         console.error("โหลดคำสั่งซื้อไม่สำเร็จ:", error);
-
-        // ถ้าเป็นการตรวจสอบเบื้องหลัง ให้เก็บรายการเดิมไว้
         if (isPolling) return;
 
         loading.style.display = "block";
-        loading.innerHTML =
-            "❌ " + safe(error.message) +
-            "<br><br>" +
-            "<button class='refresh-btn' onclick='loadOrders()'>" +
-            "ลองใหม่</button>";
+        loading.classList.add("error");
+        loading.innerHTML = "❌ " + safe(error.message) +
+            "<br><br><button class='btn btn-primary' onclick='loadOrders()'>ลองใหม่</button>";
     }
 }
 
-
-let orderPollingStarted = false;
-
 function startOrderPolling() {
     if (orderPollingStarted) return;
-
     orderPollingStarted = true;
 
     setInterval(async () => {
         if (pollInProgress || document.hidden) return;
-
         pollInProgress = true;
-
         try {
             await loadOrders(true);
         } finally {
@@ -1122,802 +452,132 @@ function startOrderPolling() {
     }, 5000);
 }
 
-
-
-// =====================================================
-// สถิติ
-// =====================================================
-
 function updateStats() {
-
-
-    document.getElementById(
-        "statAll"
-    ).textContent =
-        orders.length;
-
-
-    document.getElementById(
-        "statNew"
-    ).textContent =
-        orders.filter(
-            o =>
-            o.Status ===
-            "รับออเดอร์แล้ว"
-        ).length;
-
-
-    document.getElementById(
-        "statMaking"
-    ).textContent =
-        orders.filter(
-            o =>
-            o.Status ===
-            "กำลังทำ"
-        ).length;
-
-
-    document.getElementById(
-        "statReady"
-    ).textContent =
-        orders.filter(
-            o =>
-            o.Status ===
-            "พร้อมรับ"
-        ).length;
-
+    document.getElementById("statAll").textContent = orders.length;
+    document.getElementById("statNew").textContent =
+        orders.filter(order => order.Status === "รับออเดอร์แล้ว").length;
+    document.getElementById("statMaking").textContent =
+        orders.filter(order => order.Status === "กำลังทำ").length;
+    document.getElementById("statReady").textContent =
+        orders.filter(order => order.Status === "พร้อมรับ").length;
 }
 
-
-
-// =====================================================
-// Filter
-// =====================================================
-
-function setFilter(
-    filter,
-    button
-) {
-
-
-    currentFilter =
-        filter;
-
-
-    document
-        .querySelectorAll(
-            ".filter-btn"
-        )
-        .forEach(
-            btn =>
-            btn.classList.remove(
-                "active"
-            )
-        );
-
-
-    button.classList.add(
-        "active"
-    );
-
-
+function setFilter(filter, button) {
+    currentFilter = filter;
+    document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
     renderOrders();
-
 }
-
-
-
-// =====================================================
-// แสดง Orders
-// =====================================================
 
 function renderOrders() {
-
-
-    const list =
-        document.getElementById(
-            "orderList"
-        );
-
-
-    const filtered =
-        currentFilter === "ALL"
-
+    const list = document.getElementById("orderList");
+    const filtered = currentFilter === "ALL"
         ? orders
-
-        : orders.filter(
-            o =>
-            o.Status ===
-            currentFilter
-        );
-
+        : orders.filter(order => order.Status === currentFilter);
 
     if (!filtered.length) {
-
-        list.innerHTML =
-
-            "<div class='empty'>" +
-
-            "ยังไม่มีคำสั่งซื้อในสถานะนี้" +
-
-            "</div>";
-
+        list.innerHTML = "<div class='empty'>🧾<br><br>ยังไม่มีคำสั่งซื้อในสถานะนี้</div>";
         return;
     }
 
-
-
-    list.innerHTML =
-        filtered.map(
-            (order, index) => {
-
-
-                const items =
-                    Array.isArray(
-                        order.Items
-                    )
-                    ? order.Items
-                    : [];
-
-
-                const payment =
-                    order.Payment ||
-                    {};
-
-
-
-                const itemHTML =
-                    items.length
-
-                    ?
-
-                    items.map(
-                        item => `
-
-<div class="item">
-
-    <div>
-
-        <div class="item-name">
-
-            ${safe(
-                item.ProductName ||
-                "สินค้า"
-            )}
-
-        </div>
-
-
-        <div class="item-detail">
-
-            ขนาด
-            ${safe(
-                item.Size || "-"
-            )}
-
-            ×
-
-            ${Number(
-                item.Quantity || 0
-            )}
-
-            ${
-                item.Note
-
-                ?
-
-                " | หมายเหตุ: " +
-                safe(item.Note)
-
-                :
-
-                ""
-            }
-
-        </div>
-
-    </div>
-
-
-    <div class="item-total">
-
-        ${money(
-            item.ItemTotal
-        )}
-
-    </div>
-
-</div>
-
-`
-                    ).join("")
-
-                    :
-
-                    "<div class='empty'>" +
-                    "ไม่พบรายการสินค้า" +
-                    "</div>";
-
-
-
-                return `
-
-<div class="order-card">
-
-
-<!-- HEADER -->
-
-<div class="order-head">
-
-    <div>
-
-        <div class="order-id">
-
-            ${safe(
-                order.OrderID ||
-                "-"
-            )}
-
-        </div>
-
-
-        <div class="customer">
-
-            👤
-
-            ${safe(
-                order.CustomerName ||
-                order.UserID ||
-                "-"
-            )}
-
-        </div>
-
-
-        ${
-            order.CustomerEmail
-
-            ?
-
-            `
-
-<div class="order-date">
-
-    ✉
-    ${safe(
-        order.CustomerEmail
-    )}
-
-</div>
-
-`
-
-            :
-
-            ""
-        }
-
-
-        <div class="order-date">
-
-            🕐
-
-            ${safe(
-                order.OrderDate ||
-                "-"
-            )}
-
-        </div>
-
-    </div>
-
-
-    <span
-        class="status
-        ${statusClass(
-            order.Status
-        )}">
-
-        ${safe(
-            order.Status ||
-            "-"
-        )}
-
-    </span>
-
-</div>
-
-
-
-<!-- ITEMS -->
-
-<div class="order-body">
-
-    ${itemHTML}
-
-</div>
-
-
-
-<!-- DETAIL -->
-
-<div
-    class="detail"
-    id="detail-${index}">
-
-
-    <div class="info-grid">
-
-
-        <div>
-
-            <b>OrderID:</b>
-
-            ${safe(
-                order.OrderID
-            )}
-
-        </div>
-
-
-        <div>
-
-            <b>UserID:</b>
-
-            ${safe(
-                order.UserID
-            )}
-
-        </div>
-
-
-        <div>
-
-            <b>วิธีชำระเงิน:</b>
-
-            ${safe(
-                payment.Method ||
-                "-"
-            )}
-
-        </div>
-
-
-        <div>
-
-            <b>สถานะชำระเงิน:</b>
-
-            ${safe(
-                payment.Status ||
-                "-"
-            )}
-
-        </div>
-
-
-        <div>
-
-            <b>เวลาทำโดยประมาณ:</b>
-
-            ${safe(
-                order.EstimatedMinutes ||
-                "-"
-            )}
-
-            นาที
-
-        </div>
-
-
-        <div>
-
-            <b>จำนวนสินค้า:</b>
-
-            ${
-                items.reduce(
-                    (sum, item) =>
-                    sum +
-                    Number(
-                        item.Quantity || 0
-                    ),
-                    0
-                )
-            }
-
-            ชิ้น
-
-        </div>
-
-
-    </div>
-
-
-
-    ${
-        order.Note
-
-        ?
-
-        `
-
-<div class="note">
-
-    📝
-
-    หมายเหตุออเดอร์:
-
-    ${safe(
-        order.Note
-    )}
-
-</div>
-
-`
-
-        :
-
-        ""
-    }
-
-
-</div>
-
-
-
-<!-- BOTTOM -->
-
-<div class="order-bottom">
-
-
-    <div>
-
-        <div class="payment">
-
-            💳
-
-            ${safe(
-                payment.Method ||
-                "ไม่ระบุ"
-            )}
-
-            ${
-                payment.Status
-
-                ?
-
-                " | " +
-                safe(
-                    payment.Status
-                )
-
-                :
-
-                ""
-            }
-
-        </div>
-
-
-        <div class="total">
-
-            ${money(
-                order.Total
-            )}
-
-        </div>
-
-    </div>
-
-
-
-    <div class="actions">
-
-
-        <button
-            class="detail-btn"
-            onclick="
-                toggleDetail(
-                    ${index}
-                )
-            ">
-
-            รายละเอียด
-
-        </button>
-
-
-
-        ${
-            order.Status ===
-            "รับออเดอร์แล้ว"
-
-            ?
-
-            `
-
-<button
-    class="action-btn primary"
-    onclick="
-        changeStatus(
-            '${safe(
-                order.OrderID
-            )}',
-            'กำลังทำ'
-        )
-    ">
-
-    ▶ เริ่มทำ
-
-</button>
-
-`
-
-            :
-
-            ""
-        }
-
-
-
-        ${
-            order.Status ===
-            "กำลังทำ"
-
-            ?
-
-            `
-
-<button
-    class="action-btn primary"
-    onclick="
-        changeStatus(
-            '${safe(
-                order.OrderID
-            )}',
-            'พร้อมรับ'
-        )
-    ">
-
-    ✓ พร้อมรับ
-
-</button>
-
-`
-
-            :
-
-            ""
-        }
-
-
-
-        ${
-            order.Status ===
-            "พร้อมรับ"
-
-            ?
-
-            `
-
-<button
-    class="action-btn primary"
-    onclick="
-        changeStatus(
-            '${safe(
-                order.OrderID
-            )}',
-            'เสร็จสิ้น'
-        )
-    ">
-
-    ✓ เสร็จสิ้น
-
-</button>
-
-`
-
-            :
-
-            ""
-        }
-
-
-    </div>
-
-</div>
-
-
-</div>
-
-`;
-
-            }
-
-        ).join("");
-
+    list.innerHTML = filtered.map((order, index) => {
+        const items = Array.isArray(order.Items) ? order.Items : [];
+        const payment = order.Payment || {};
+        const detailId = "detail-" + index;
+        const itemHTML = items.length ? items.map(item => `
+            <div class="item">
+                <div>
+                    <div class="item-name">${safe(item.ProductName || "สินค้า")}</div>
+                    <div class="item-detail">
+                        ขนาด ${safe(item.Size || "-")} × ${Number(item.Quantity || 0)}
+                        ${item.Note ? "<br>📝 หมายเหตุ: " + safe(item.Note) : ""}
+                    </div>
+                </div>
+                <div class="item-total">${money(item.ItemTotal ?? (Number(item.Price || 0) * Number(item.Quantity || 0)))}</div>
+            </div>
+        `).join("") : "<div class='empty'>ไม่พบรายการสินค้า</div>";
+
+        return `
+        <article class="order-card">
+            <div class="order-head">
+                <div>
+                    <div class="order-id">ออเดอร์ #${safe(order.OrderID || "-")}</div>
+                    <div class="customer">👤 ${safe(order.CustomerName || order.UserID || "-")}</div>
+                    ${order.CustomerEmail ? `<div class="order-date">✉ ${safe(order.CustomerEmail)}</div>` : ""}
+                    <div class="order-date">🕒 ${safe(order.OrderDate || "-")}</div>
+                </div>
+                <span class="status ${statusClass(order.Status)}">${safe(order.Status || "-")}</span>
+            </div>
+
+            <div class="order-body">${itemHTML}</div>
+
+            <div class="detail" id="${detailId}">
+                <div class="info-grid">
+                    <div><b>OrderID:</b> ${safe(order.OrderID || "-")}</div>
+                    <div><b>UserID:</b> ${safe(order.UserID || "-")}</div>
+                    <div><b>วิธีชำระเงิน:</b> ${safe(payment.Method || "-")}</div>
+                    <div><b>สถานะชำระเงิน:</b> ${safe(payment.Status || "-")}</div>
+                    <div><b>เวลาทำโดยประมาณ:</b> ${safe(order.EstimatedMinutes || "-")} นาที</div>
+                    <div><b>จำนวนสินค้า:</b> ${items.reduce((sum, item) => sum + Number(item.Quantity || 0), 0)} ชิ้น</div>
+                </div>
+                ${order.Note ? `<div class="note">📝 หมายเหตุออเดอร์: ${safe(order.Note)}</div>` : ""}
+            </div>
+
+            <div class="order-bottom">
+                <div>
+                    <div class="payment">💳 ${safe(payment.Method || "ไม่ระบุ")}
+                        ${payment.Status ? " | " + safe(payment.Status) : ""}
+                    </div>
+                    <div class="total">${money(order.Total)}</div>
+                </div>
+                <div class="actions">
+                    <button class="detail-btn" onclick="toggleDetail('${detailId}')">รายละเอียด</button>
+                    ${order.Status === "รับออเดอร์แล้ว" ? `<button class="action-btn primary" onclick="changeStatus('${safe(order.OrderID)}','กำลังทำ')">▶ เริ่มทำ</button>` : ""}
+                    ${order.Status === "กำลังทำ" ? `<button class="action-btn primary" onclick="changeStatus('${safe(order.OrderID)}','พร้อมรับ')">✓ พร้อมรับ</button>` : ""}
+                    ${order.Status === "พร้อมรับ" ? `<button class="action-btn primary" onclick="changeStatus('${safe(order.OrderID)}','เสร็จสิ้น')">✓ เสร็จสิ้น</button>` : ""}
+                </div>
+            </div>
+        </article>`;
+    }).join("");
 }
 
-
-
-// =====================================================
-// เปิด / ปิดรายละเอียด
-// =====================================================
-
-function toggleDetail(index) {
-
-
-    const element =
-        document.getElementById(
-            "detail-" +
-            index
-        );
-
-
-    if (element) {
-
-        element.classList.toggle(
-            "show"
-        );
-
-    }
-
+function toggleDetail(id) {
+    const element = document.getElementById(id);
+    if (element) element.classList.toggle("show");
 }
 
-
-
-// =====================================================
-// เปลี่ยนสถานะ
-// =====================================================
-
-async function changeStatus(
-    orderID,
-    status
-) {
-
-
-    const confirmChange =
-        confirm(
-            "ต้องการเปลี่ยนสถานะเป็น \"" +
-            status +
-            "\" ใช่หรือไม่?"
-        );
-
-
-    if (!confirmChange) {
-
-        return;
-    }
-
-
+async function changeStatus(orderID, status) {
+    if (!confirm("ต้องการเปลี่ยนสถานะเป็น \"" + status + "\" ใช่หรือไม่?")) return;
 
     try {
+        const result = await apiRequest({
+            action: "updateOrderStatus",
+            token,
+            OrderID: orderID,
+            Status: status
+        });
 
-
-        const response =
-            await fetch(
-
-                API_URL,
-
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                        "text/plain;charset=utf-8"
-
-                    },
-
-                    body:
-                    JSON.stringify({
-
-                        action:
-                        "updateOrderStatus",
-
-                        token:
-                        token,
-
-                        OrderID:
-                        orderID,
-
-                        Status:
-                        status
-
-                    })
-
-                }
-
-            );
-
-
-        const result =
-            await response.json();
-
-
-        if (!result.success) {
-
-            throw new Error(
-                result.message ||
-                "เปลี่ยนสถานะไม่สำเร็จ"
-            );
-
-        }
-
-
+        if (!result.success) throw new Error(result.message || "เปลี่ยนสถานะไม่สำเร็จ");
+        showToast("อัปเดตสถานะแล้ว", "สถานะคำสั่งซื้อเปลี่ยนเป็น " + status);
         await loadOrders();
-
-
+    } catch (error) {
+        alert(error.message || "เกิดข้อผิดพลาด");
     }
-    catch (error) {
-
-
-        alert(
-            error.message ||
-            "เกิดข้อผิดพลาด"
-        );
-
-    }
-
 }
-
-
-
-// =====================================================
-// ไป Dashboard
-// =====================================================
 
 function goDashboard() {
-
-    window.location.href =
-        "AdminDashboard.html";
-
+    window.location.href = "AdminDashboard.html";
 }
-
-
-
-// =====================================================
-// Logout
-// =====================================================
 
 function logout() {
-
-
-    sessionStorage.removeItem(
-        "loginToken"
-    );
-
-    localStorage.removeItem(
-        "loginToken"
-    );
-
-
-    sessionStorage.removeItem(
-        "currentUser"
-    );
-
-    localStorage.removeItem(
-        "currentUser"
-    );
-
-
-    window.location.href =
-        "Users.html";
-
+    sessionStorage.removeItem("loginToken");
+    localStorage.removeItem("loginToken");
+    sessionStorage.removeItem("currentUser");
+    localStorage.removeItem("currentUser");
+    window.location.href = "Users.html";
 }
 
-
-
-// =====================================================
-// เริ่มต้น
-// =====================================================
-
-window.onload =
-    checkAdmin;
-
-
+window.addEventListener("DOMContentLoaded", checkAdmin);
 </script>
-
 </body>
-
 </html>
