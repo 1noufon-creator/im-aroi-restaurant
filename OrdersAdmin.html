@@ -985,7 +985,8 @@ async function checkAdmin() {
             );
 
 
-        loadOrders();
+        await loadOrders();
+        startOrderPolling();
 
 
     }
@@ -1020,124 +1021,94 @@ async function checkAdmin() {
 // โหลด Orders
 // =====================================================
 
-async function loadOrders() {
 
+async function loadOrders(isPolling = false) {
+    const loading = document.getElementById("loading");
+    const list = document.getElementById("orderList");
 
-    const loading =
-        document.getElementById(
-            "loading"
-        );
-
-
-    const list =
-        document.getElementById(
-            "orderList"
-        );
-
-
-    loading.style.display =
-        "block";
-
-
-    list.style.display =
-        "none";
-
+    // ไม่ทำให้หน้ารายการกระพริบระหว่างตรวจสอบอัตโนมัติ
+    if (!isPolling) {
+        loading.style.display = "block";
+        loading.textContent = "กำลังโหลดคำสั่งซื้อ...";
+        list.style.display = "none";
+    }
 
     try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                action: "getAdminOrders",
+                token: token
+            })
+        });
 
+        // ต้องอ่านผลตอบกลับก่อนใช้งาน result
+        const result = await response.json();
 
-        const response =
-            await fetch(
-
-                API_URL,
-
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                        "text/plain;charset=utf-8"
-
-                    },
-
-                    body: JSON.stringify({
-
-                        action:
-                        "getAdminOrders",
-
-                        token:
-                        token
-
-                    })
-
-                }
-
+        if (!result.success) {
+            throw new Error(
+                result.message || "โหลดคำสั่งซื้อไม่สำเร็จ"
             );
-        
-const fetchedOrders = Array.isArray(result.orders)
-    ? result.orders
-    : [];
+        }
 
-let newOrders = [];
+        const fetchedOrders = Array.isArray(result.orders)
+            ? result.orders
+            : [];
 
-if (knownOrderIds !== null) {
-    newOrders = fetchedOrders.filter(order =>
-        order.OrderID &&
-        !knownOrderIds.has(String(order.OrderID))
-    );
-}
+        // ตรวจหาออเดอร์ใหม่ เฉพาะหลังจากโหลดข้อมูลครั้งแรกแล้ว
+        let newOrders = [];
 
-knownOrderIds = new Set(
-    fetchedOrders
-        .filter(order => order.OrderID)
-        .map(order => String(order.OrderID))
-);
+        if (knownOrderIds !== null) {
+            newOrders = fetchedOrders.filter(order =>
+                order.OrderID &&
+                !knownOrderIds.has(String(order.OrderID))
+            );
+        }
 
-orders = fetchedOrders;
+        knownOrderIds = new Set(
+            fetchedOrders
+                .filter(order => order.OrderID)
+                .map(order => String(order.OrderID))
+        );
 
-if (newOrders.length > 0) {
-    notifyNewOrders(newOrders);
-}
+        orders = fetchedOrders;
 
-updateStats();
-renderOrders();
+        if (newOrders.length > 0) {
+            notifyNewOrders(newOrders);
+        }
 
+        updateStats();
+        renderOrders();
 
+        loading.style.display = "none";
+        list.style.display = "flex";
 
-        loading.style.display =
-            "none";
+    } catch (error) {
+        console.error("โหลดคำสั่งซื้อไม่สำเร็จ:", error);
 
+        // ถ้าเป็นการตรวจสอบเบื้องหลัง ให้เก็บรายการเดิมไว้
+        if (isPolling) return;
 
-        list.style.display =
-            "flex";
-
-
-    }
-    catch (error) {
-
-
+        loading.style.display = "block";
         loading.innerHTML =
-            "❌ " +
-            safe(error.message) +
-
+            "❌ " + safe(error.message) +
             "<br><br>" +
-
-            "<button " +
-            "class='refresh-btn' " +
-            "onclick='loadOrders()'>" +
-
-            "ลองใหม่" +
-
-            "</button>";
-
+            "<button class='refresh-btn' onclick='loadOrders()'>" +
+            "ลองใหม่</button>";
     }
-
 }
 
+
+let orderPollingStarted = false;
 
 function startOrderPolling() {
+    if (orderPollingStarted) return;
+
+    orderPollingStarted = true;
+
     setInterval(async () => {
         if (pollInProgress || document.hidden) return;
 
@@ -1150,6 +1121,7 @@ function startOrderPolling() {
         }
     }, 5000);
 }
+
 
 
 // =====================================================
@@ -1874,7 +1846,6 @@ async function changeStatus(
 
 
         await loadOrders();
-        startOrderPolling();
 
 
     }
