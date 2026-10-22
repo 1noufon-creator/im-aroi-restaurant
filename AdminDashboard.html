@@ -1,880 +1,702 @@
+
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Dashboard - ร้านอิ่มอร่อย</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, "Tahoma", sans-serif;
-        }
-
-        body {
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        /* =========================
-           Header
-        ========================= */
-
-        .header {
-            background: #e53935;
-            color: white;
-            padding: 18px 30px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .admin-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .admin-name {
-            font-size: 15px;
-        }
-
-        .logout-btn {
-            border: none;
-            background: white;
-            color: #e53935;
-
-            padding: 8px 15px;
-            border-radius: 6px;
-
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .logout-btn:hover {
-            background: #eeeeee;
-        }
-
-
-        /* =========================
-           Layout
-        ========================= */
-
-        .container {
-            display: flex;
-            min-height: calc(100vh - 70px);
-        }
-
-
-        /* =========================
-           Sidebar
-        ========================= */
-
-        .sidebar {
-            width: 240px;
-            background: white;
-
-            border-right: 1px solid #ddd;
-            padding: 20px;
-        }
-
-        .sidebar h3 {
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .menu-btn {
-            width: 100%;
-
-            border: none;
-            background: white;
-
-            padding: 13px;
-            margin-bottom: 8px;
-
-            text-align: left;
-            border-radius: 7px;
-
-            cursor: pointer;
-            font-size: 15px;
-        }
-
-        .menu-btn:hover {
-            background: #fce4e4;
-        }
-
-        .menu-btn.active {
-            background: #e53935;
-            color: white;
-        }
-
-
-        /* =========================
-           Main
-        ========================= */
-
-        .main {
-            flex: 1;
-            padding: 30px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .welcome {
-            color: #777;
-            margin-bottom: 25px;
-        }
-
-
-        /* =========================
-           Cards
-        ========================= */
-
-        .cards {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(200px, 1fr));
-
-            gap: 20px;
-
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-
-            padding: 22px;
-
-            border-radius: 10px;
-
-            box-shadow:
-                0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .card-title {
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .card-number {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-
-        /* =========================
-           Quick Menu
-        ========================= */
-
-        .section {
-            background: white;
-
-            padding: 25px;
-
-            border-radius: 10px;
-
-            box-shadow:
-                0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .section h2 {
-            margin-bottom: 20px;
-        }
-
-        .quick-menu {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(180px, 1fr));
-
-            gap: 15px;
-        }
-
-        .quick-btn {
-            border: 1px solid #ddd;
-            background: white;
-
-            padding: 20px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-size: 15px;
-        }
-
-        .quick-btn:hover {
-            background: #fce4e4;
-        }
-
-
-        /* =========================
-           Loading
-        ========================= */
-
-        #loading {
-            position: fixed;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: 100%;
-
-            background: rgba(255,255,255,0.95);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            z-index: 9999;
-
-            font-size: 20px;
-        }
-
-
-        /* =========================
-           Mobile
-        ========================= */
-
-        @media (max-width: 768px) {
-
-            .header {
-                padding: 15px;
-            }
-
-            .logo {
-                font-size: 18px;
-            }
-
-            .admin-name {
-                display: none;
-            }
-
-            .container {
-                display: block;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #ddd;
-            }
-
-            .sidebar h3 {
-                display: none;
-            }
-
-            .main {
-                padding: 20px 15px;
-            }
-
-            .page-title {
-                font-size: 23px;
-            }
-
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - ร้านอิ่มอร่อย</title>
+<style>
+:root{--red:#e53935;--red-dark:#c62828;--bg:#f5f6f8;--text:#263238;--muted:#74808b;--line:#e6e9ed;--green:#20a464;--amber:#e6a23c;--blue:#3976d4;--purple:#805ad5;--shadow:0 3px 12px rgba(25,35,45,.07)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,"Noto Sans Thai",Tahoma,sans-serif;color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.header{background:var(--red);color:#fff;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:78px}
+.logo{font-size:23px;font-weight:800}
+.admin-info{display:flex;align-items:center;gap:14px}
+.logout-btn{border:0;background:#fff;color:var(--red);padding:10px 15px;border-radius:8px;font-weight:700}
+.container{display:flex;min-height:calc(100vh - 78px)}
+.sidebar{width:250px;flex:0 0 250px;background:#fff;border-right:1px solid #ddd;padding:22px 15px}
+.sidebar h3{font-size:17px;color:#59636e;margin:3px 0 20px}
+.menu-btn{display:block;width:100%;border:0;background:#fff;padding:14px 13px;margin-bottom:7px;text-align:left;border-radius:8px;font-size:15px;color:#263238}
+.menu-btn:hover{background:#fff0f0}
+.menu-btn.active{background:var(--red);color:#fff}
+.main{flex:1;min-width:0;padding:28px 30px 40px}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.page-title{font-size:29px;margin:0 0 8px}
+.welcome{color:var(--muted);margin:0}
+.head-actions{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:10px 13px;border-radius:9px;font-weight:700}
+.btn:hover{background:#f8fafc}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red-dark)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.message{display:none;padding:12px 14px;margin:0 0 18px;border-radius:9px;font-size:14px;line-height:1.5}
+.message.show{display:block}
+.message.error{background:#fff0f0;color:#a61b1b}
+.message.success{background:#e9f8ef;color:#17683a}
+.message.info{background:#edf4ff;color:#24549b}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px;margin-bottom:22px}
+.card{background:#fff;border:1px solid #edf0f2;border-radius:13px;padding:20px;box-shadow:var(--shadow);min-width:0}
+.stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title{font-size:14px;color:var(--muted)}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:21px;background:#f1f5f9}
+.stat-number{font-size:28px;font-weight:800;margin-top:13px;overflow-wrap:anywhere}
+.stat-note{font-size:12px;color:var(--muted);margin-top:6px}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:20px;margin-bottom:20px}
+.section{background:#fff;border:1px solid #edf0f2;border-radius:13px;padding:21px;box-shadow:var(--shadow);min-width:0}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.section h2{font-size:19px;margin:0}
+.section-sub{font-size:12px;color:var(--muted);margin-top:5px}
+.range-select{border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff;color:#39434d}
+.chart-wrap{height:260px;position:relative}
+.chart-wrap canvas{width:100%;height:100%;display:block}
+.mini-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mini-stat{padding:15px;border:1px solid var(--line);border-radius:10px;background:#fbfcfd}
+.mini-label{font-size:12px;color:var(--muted)}
+.mini-value{font-size:22px;font-weight:800;margin-top:7px}
+.status-line{display:flex;align-items:center;gap:9px;margin-top:18px;font-size:13px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px #e1f7eb}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:13px 12px;text-align:left;border-bottom:1px solid #edf0f2;font-size:13px;vertical-align:middle}
+th{background:#f8fafb;color:#65717c;font-weight:700;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+.order-id{font-weight:800}
+.subline{font-size:12px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:800;white-space:nowrap;background:#edf0f2;color:#53606b}
+.pill.pending{background:#fff3d7;color:#8b5c00}
+.pill.making{background:#e6efff;color:#2457a6}
+.pill.ready{background:#def7e7;color:#176b3b}
+.pill.done{background:#e9f0ec;color:#4e6257}
+.pill.cancel{background:#ffebeb;color:#b42323}
+.pill.low{background:#fff3d7;color:#8b5c00}
+.pill.out{background:#ffebeb;color:#b42323}
+.table-empty{text-align:center;color:var(--muted);padding:28px}
+.popular-list,.stock-list{display:flex;flex-direction:column;gap:14px}
+.popular-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px}
+.rank{width:32px;height:32px;border-radius:9px;background:#fff1f0;color:var(--red);font-weight:800;display:grid;place-items:center}
+.popular-name{font-size:14px;font-weight:700;overflow-wrap:anywhere}
+.popular-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.popular-count{font-size:13px;font-weight:800;white-space:nowrap}
+.stock-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:11px;border-bottom:1px solid #edf0f2}
+.stock-item:last-child{padding-bottom:0;border-bottom:0}
+.stock-name{font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.stock-detail{font-size:12px;color:var(--muted);margin-top:4px}
+.stock-qty{font-weight:800;white-space:nowrap}
+.footer-note{font-size:12px;color:var(--muted);margin-top:15px;line-height:1.6}
+#loading{position:fixed;inset:0;z-index:9999;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;font-size:18px;color:#444}
+
+/* ส่วนควบคุมสถานะร้าน */
+.store-control{margin-bottom:22px}
+.store-control-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.store-info{display:flex;align-items:center;gap:14px}
+.store-icon{width:54px;height:54px;flex:0 0 54px;border-radius:15px;background:#f1f5f9;display:grid;place-items:center;font-size:27px}
+.store-title{font-size:19px;margin:0 0 7px}
+.store-status-text{font-weight:800}
+.store-status-desc{font-size:13px;color:var(--muted);margin-top:5px}
+.store-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.close-store-btn{border-color:#fecaca;color:#dc2626}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:1fr}.sidebar{width:220px;flex-basis:220px}.main{padding:23px}}
+@media(max-width:760px){.header{padding:14px 16px}.logo{font-size:18px}.admin-name{display:none}.container{display:block}.sidebar{width:100%;padding:12px;display:flex;gap:7px;overflow-x:auto;border-right:0;border-bottom:1px solid #ddd}.sidebar h3{display:none}.menu-btn{width:auto;white-space:nowrap;margin:0;padding:11px 12px}.main{padding:20px 13px 30px}.page-title{font-size:24px}.cards{gap:10px}.card{padding:15px}.stat-number{font-size:24px}.section{padding:15px}.dashboard-grid{gap:13px}.chart-wrap{height:230px}}
+@media(max-width:420px){.cards{grid-template-columns:1fr 1fr}.stat-number{font-size:21px}.card-title{font-size:12px}.stat-icon{width:34px;height:34px}.mini-stats{grid-template-columns:1fr 1fr}.store-buttons{width:100%}.store-buttons button{flex:1}}
+</style>
 </head>
-
-
 <body>
-
-
-<!-- =========================
-     Loading
-========================= -->
-
-<div id="loading">
-    กำลังตรวจสอบสิทธิ์...
-</div>
-
-
-<!-- =========================
-     Header
-========================= -->
+<div id="loading">กำลังตรวจสอบสิทธิ์ผู้ดูแลระบบ...</div>
 
 <header class="header">
-
-    <div class="logo">
-        🍔 ร้านอิ่มอร่อย
-    </div>
-
-    <div class="admin-info">
-
-        <span class="admin-name" id="adminName">
-            Admin
-        </span>
-
-        <button
-            class="logout-btn"
-            onclick="logout()">
-
-            ออกจากระบบ
-
-        </button>
-
-    </div>
-
+  <div class="logo">🍔 ร้านอิ่มอร่อย</div>
+  <div class="admin-info">
+    <span class="admin-name" id="adminName">ผู้ดูแลระบบ</span>
+    <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+  </div>
 </header>
 
-
-<!-- =========================
-     Layout
-========================= -->
-
 <div class="container">
-
-
-    <!-- Sidebar -->
-
-    <aside class="sidebar">
-
-        <h3>เมนูผู้ดูแลระบบ</h3>
-
-
-        <button
-            class="menu-btn active"
-            onclick="showDashboard()">
-
-            📊 Dashboard
-
-        </button>
-
-
-        <button
-            class="menu-btn"
-            onclick="goProducts()">
-
-            🍔 จัดการสินค้า
-
-        </button>
-
-
-        <button
-            class="menu-btn"
-            onclick="goOrders()">
-
-            🛒 จัดการคำสั่งซื้อ
-
-        </button>
-
-
-        <button
-            class="menu-btn"
-            onclick="goStock()">
-
-            📦 จัดการสต็อก
-
-        </button>
-
-
-        <button
-            id="ownerUsersMenu"
-            class="menu-btn"
-            style="display:none"
-            onclick="goUsers()">
-
-            👥 จัดการสมาชิก
-
-        </button>
-
-
-    </aside>
-
-
-    <!-- Main -->
-
-    <main class="main">
-
-
-        <h1 class="page-title">
-            Dashboard
-        </h1>
-
-
-        <p class="welcome">
-
-            ยินดีต้อนรับผู้ดูแลระบบ
-            <span id="welcomeName"></span>
-
-        </p>
-
-        <!-- Store open/closed controls -->
-        <section class="store-panel" aria-labelledby="storeTitle">
-            <div class="store-row">
-                <div>
-                    <h2 id="storeTitle">สถานะร้านอาหาร</h2>
-                    <div id="storeStatusText" class="store-status">กำลังโหลดสถานะร้าน...</div>
-                </div>
-                <div class="store-actions">
-                    <button id="openStoreBtn" class="store-btn store-open-btn" onclick="setStoreOpen(true)" disabled>🟢 เปิดร้าน</button>
-                    <button id="closeStoreBtn" class="store-btn store-close-btn" onclick="setStoreOpen(false)" disabled>🔴 ปิดร้าน</button>
-                </div>
-            </div>
-            <div id="storeMessage" role="status"></div>
-        </section>
-
-
-        <!-- Cards -->
-
-        <div class="cards">
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    สินค้าทั้งหมด
-                </div>
-
-                <div
-                    class="card-number"
-                    id="productCount">
-
-                    -
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    คำสั่งซื้อ
-                </div>
-
-                <div
-                    class="card-number"
-                    id="orderCount">
-
-                    -
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    สมาชิก
-                </div>
-
-                <div
-                    class="card-number"
-                    id="userCount">
-
-                    -
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-title">
-                    สถานะระบบ
-                </div>
-
-                <div
-                    class="card-number">
-
-                    🟢
-
-                </div>
-
-            </div>
-
-
+  <aside class="sidebar">
+    <h3>เมนูผู้ดูแลระบบ</h3>
+    <button class="menu-btn active" onclick="goDashboard()">📊 Dashboard</button>
+    <button class="menu-btn" onclick="goProducts()">🍔 จัดการสินค้า</button>
+    <button class="menu-btn" onclick="goOrders()">🛒 จัดการคำสั่งซื้อ</button>
+    <button class="menu-btn" onclick="goStock()">📦 จัดการสต็อก</button>
+    <button class="menu-btn" id="ownerUsersMenu" style="display:none" onclick="goUsers()">👥 จัดการสมาชิก</button>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="welcome">ยินดีต้อนรับ <span id="welcomeName">ผู้ดูแลระบบ</span> · ภาพรวมร้านอาหาร</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn" id="refreshBtn" onclick="loadDashboard()">↻ รีเฟรชข้อมูล</button>
+        <button class="btn btn-primary" id="exportBtn" onclick="exportOrders()">⇩ ส่งออกรายงาน CSV</button>
+      </div>
+    </div>
+
+    <div id="message" class="message" role="status"></div>
+
+    <!-- ส่วนควบคุมสถานะร้าน -->
+    <section class="section store-control">
+      <div class="store-control-inner">
+        <div class="store-info">
+          <div id="storeIcon" class="store-icon">⚪</div>
+          <div>
+            <h2 class="store-title">สถานะร้านอิ่มอร่อย</h2>
+            <div id="storeStatusText" class="store-status-text">กำลังตรวจสอบสถานะร้าน...</div>
+            <div id="storeStatusDesc" class="store-status-desc">กำลังเชื่อมต่อสถานะร้าน</div>
+          </div>
         </div>
+        <div class="store-buttons">
+          <button class="btn btn-primary" id="openStoreBtn" onclick="changeStoreStatus(true)" disabled>🟢 เปิดร้าน</button>
+          <button class="btn close-store-btn" id="closeStoreBtn" onclick="changeStoreStatus(false)" disabled>🔴 ปิดร้าน</button>
+        </div>
+      </div>
+    </section>
 
+    <section class="cards">
+      <div class="card">
+        <div class="stat-top"><div class="card-title">ยอดขายวันนี้</div><div class="stat-icon" style="color:var(--green)">฿</div></div>
+        <div class="stat-number" id="todaySales">—</div>
+        <div class="stat-note" id="salesNote">รอโหลดข้อมูลคำสั่งซื้อ</div>
+      </div>
+      <div class="card">
+        <div class="stat-top"><div class="card-title">คำสั่งซื้อทั้งหมด</div><div class="stat-icon" style="color:var(--blue)">🛒</div></div>
+        <div class="stat-number" id="orderCount">—</div>
+        <div class="stat-note" id="pendingNote">กำลังตรวจสอบสถานะ</div>
+      </div>
+      <div class="card">
+        <div class="stat-top"><div class="card-title">สินค้าทั้งหมด</div><div class="stat-icon" style="color:var(--purple)">🍔</div></div>
+        <div class="stat-number" id="productCount">—</div>
+        <div class="stat-note">นับตามรายการ/ขนาดในชีต Products</div>
+      </div>
+      <div class="card">
+        <div class="stat-top"><div class="card-title">สมาชิกทั้งหมด</div><div class="stat-icon" style="color:var(--amber)">👥</div></div>
+        <div class="stat-number" id="userCount">—</div>
+        <div class="stat-note" id="memberNote">ข้อมูลตามสิทธิ์ผู้ใช้งาน</div>
+      </div>
+    </section>
 
-        <!-- Quick Menu -->
+    <div class="dashboard-grid">
+      <section class="section">
+        <div class="section-head">
+          <div><h2>📈 กราฟยอดขาย</h2><div class="section-sub">คำนวณจากคำสั่งซื้อที่เสร็จสมบูรณ์/ชำระเงินสำเร็จ</div></div>
+          <select class="range-select" id="salesRange" onchange="renderSalesChart()">
+            <option value="7">7 วันล่าสุด</option>
+            <option value="14">14 วันล่าสุด</option>
+            <option value="30">30 วันล่าสุด</option>
+          </select>
+        </div>
+        <div class="chart-wrap"><canvas id="salesChart" aria-label="กราฟยอดขาย"></canvas></div>
+      </section>
 
-        <section class="section">
+      <section class="section">
+        <div class="section-head"><div><h2>🔎 ภาพรวมสถานะ</h2><div class="section-sub">สรุปจากข้อมูลที่โหลดได้</div></div></div>
+        <div class="mini-stats">
+          <div class="mini-stat"><div class="mini-label">รอดำเนินการ</div><div class="mini-value" id="pendingCount">—</div></div>
+          <div class="mini-stat"><div class="mini-label">กำลังทำ</div><div class="mini-value" id="makingCount">—</div></div>
+          <div class="mini-stat"><div class="mini-label">พร้อมรับ/เสร็จ</div><div class="mini-value" id="readyCount">—</div></div>
+          <div class="mini-stat"><div class="mini-label">สินค้าใกล้หมด/หมด</div><div class="mini-value" id="lowStockCount">—</div></div>
+        </div>
+        <div class="status-line"><span class="dot"></span><span id="systemStatus">ระบบหน้าเว็บพร้อมทำงาน</span></div>
+      </section>
+    </div>
 
-            <h2>
-                เมนูจัดการระบบ
-            </h2>
+    <section class="section" style="margin-bottom:20px">
+      <div class="section-head">
+        <div><h2>🧾 คำสั่งซื้อล่าสุด</h2><div class="section-sub">แสดงคำสั่งซื้อล่าสุดสูงสุด 8 รายการ</div></div>
+        <button class="btn" onclick="goOrders()">ดูคำสั่งซื้อทั้งหมด →</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>เลขที่คำสั่งซื้อ</th><th>ลูกค้า</th><th>วันที่สั่งซื้อ</th><th>ยอดรวม</th><th>สถานะ</th></tr></thead>
+          <tbody id="recentOrders"><tr><td colspan="5" class="table-empty">กำลังโหลดข้อมูล...</td></tr></tbody>
+        </table>
+      </div>
+    </section>
 
+    <div class="dashboard-grid">
+      <section class="section">
+        <div class="section-head"><div><h2>🏆 เมนูขายดี</h2><div class="section-sub">เรียงตามจำนวนชิ้นในคำสั่งซื้อที่เสร็จสมบูรณ์</div></div><button class="btn" onclick="goProducts()">จัดการสินค้า</button></div>
+        <div id="popularList" class="popular-list"><div class="table-empty">กำลังคำนวณเมนูขายดี...</div></div>
+      </section>
+      <section class="section">
+        <div class="section-head"><div><h2>📦 แจ้งเตือนสต็อก</h2><div class="section-sub">เกณฑ์ใกล้หมดคือคงเหลือ 1–5 ชิ้น</div></div><button class="btn" onclick="goStock()">จัดการสต็อก</button></div>
+        <div id="stockList" class="stock-list"><div class="table-empty">กำลังตรวจสอบสต็อก...</div></div>
+      </section>
+    </div>
 
-            <div class="quick-menu">
-
-
-                <button
-                    class="quick-btn"
-                    onclick="goProducts()">
-
-                    🍔<br><br>
-                    จัดการสินค้า
-
-                </button>
-
-
-                <button
-                    class="quick-btn"
-                    onclick="goOrders()">
-
-                    🛒<br><br>
-                    จัดการคำสั่งซื้อ
-
-                </button>
-
-
-                <button
-                    class="quick-btn"
-                    onclick="goStock()">
-
-                    📦<br><br>
-                    จัดการสต็อก
-
-                </button>
-
-                <button
-                    id="ownerUsersQuick"
-                    class="quick-btn"
-                    style="display:none"
-                    onclick="goUsers()">
-
-                    👥<br><br>
-                    จัดการสมาชิก
-
-                </button>
-
-
-            </div>
-
-        </section>
-
-
-    </main>
-
+    <p class="footer-note">ข้อมูลแสดงตามที่ API และ Google Sheets ส่งกลับมา หากส่วนใดโหลดไม่ได้ ระบบจะแจ้งเตือนโดยไม่สร้างตัวเลขตัวอย่างแทนข้อมูลจริง</p>
+  </main>
 </div>
 
-
-
 <script>
+"use strict";
 
-/* ==========================================
-   Google Apps Script API
-========================================== */
+const API_URL="https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
+let currentAdmin=null, products=[], orders=[], members=[];
+let ordersLoaded=false, productsLoaded=false, membersLoaded=false;
+let storeIsOpen=null, storeStatusLoaded=false, storeBusy=false;
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
+const $=id=>document.getElementById(id);
+function getStored(key){return sessionStorage.getItem(key)||localStorage.getItem(key)||""}
+function getToken(){return getStored("loginToken")}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function number(v){const n=Number(v);return Number.isFinite(n)?n:0}
+function money(v){return new Intl.NumberFormat("th-TH",{style:"currency",currency:"THB",maximumFractionDigits:2}).format(number(v))}
 
+function api(payload){
+  return fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  }).then(async r=>{
+    const t=await r.text();
+    try{return JSON.parse(t)}
+    catch(e){throw new Error("API ส่งข้อมูลกลับมาไม่ใช่ JSON")}
+  });
+}
 
-/* ==========================================
-   ตรวจสอบสิทธิ์ Admin
-========================================== */
+function showMessage(text,type="info"){
+  const el=$("message");
+  el.textContent=text;
+  el.className="message show "+type;
+}
+function hideMessage(){$("message").className="message"}
 
-async function checkAdminAccess() {
+function dateValue(v){
+  if(v instanceof Date)return isNaN(v)?null:v;
+  if(v===null||v===undefined||v==="")return null;
+  if(typeof v==="number"){const d=new Date(v);return isNaN(d)?null:d}
+  let s=String(v).trim(),d=new Date(s);
+  if(!isNaN(d))return d;
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){
+    let y=Number(m[3]);if(y>2400)y-=543;
+    d=new Date(y,Number(m[2])-1,Number(m[1]),Number(m[4]||0),Number(m[5]||0),Number(m[6]||0));
+    return isNaN(d)?null:d;
+  }
+  return null;
+}
+function dateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function isSameDay(a,b){return !!a&&dateKey(a)===dateKey(b)}
+function normalize(s){return String(s||"").trim().toLowerCase()}
+function statusType(s){
+  const x=normalize(s);
+  if(/cancel|ยกเลิก|reject|ปฏิเสธ/.test(x))return"cancel";
+  if(/complete|completed|success|สำเร็จ|เสร็จสิ้น|เสร็จแล้ว/.test(x))return"done";
+  if(/ready|cooked|พร้อมรับ|ทำเสร็จ/.test(x))return"ready";
+  if(/cook|making|prepar|กำลังทำ|กำลังปรุง|กำลังเตรียม/.test(x))return"making";
+  if(/pending|new|received|รอ|รับออเดอร์|ใหม่/.test(x))return"pending";
+  return"";
+}
+function statusLabel(s){return String(s||"").trim()||"ไม่ระบุสถานะ"}
+function isCancelled(o){return statusType(o.Status)==="cancel"}
+function isCompleted(o){
+  const s=statusType(o.Status);
+  const pay=normalize(o.Payment&&o.Payment.Status);
+  return s==="done"||/paid|success|ชำระแล้ว|ชำระเงินสำเร็จ/.test(pay);
+}
+function isRevenueOrder(o){
+  return !isCancelled(o)&&(isCompleted(o)||
+    normalize(o.Payment&&o.Payment.Status)==="paid"||
+    normalize(o.Payment&&o.Payment.Status)==="success"||
+    normalize(o.Payment&&o.Payment.Status)==="ชำระเงินสำเร็จ");
+}
+function orderDate(o){return dateValue(o.OrderDate||o.CreatedAt||o.Date||"")}
+function orderTotal(o){return number(o.Total??o.total??o.GrandTotal??0)}
+function productName(p){return String(p.ProductName||p.Name||p.name||"ไม่ระบุชื่อสินค้า")}
+function productStock(p){return number(p.Stock??p.stock??p.Quantity??0)}
+function activeProduct(p){const a=normalize(p.Active);return !["false","0","no","inactive","ปิดใช้งาน"].includes(a)}
+function setText(id,text){$(id).textContent=text}
 
-    let token =
-        sessionStorage.getItem("loginToken") ||
-        localStorage.getItem("loginToken");
-
-
-    /* ไม่มี Token */
-
-    if (!token) {
-
-        alert("กรุณาเข้าสู่ระบบก่อน");
-
-        window.location.href = "Users.html";
-
-        return;
-
+/* ตรวจสอบสิทธิ์ Admin */
+async function checkAccess(){
+  const token=getToken();
+  if(!token){
+    alert("กรุณาเข้าสู่ระบบก่อน");
+    location.href="Users.html";
+    return false;
+  }
+  try{
+    const result=await api({action:"checkAdmin",token});
+    if(!result.success){
+      alert(result.message||"คุณไม่มีสิทธิ์เข้าใช้งาน");
+      clearLogin();
+      location.href="Menu.html";
+      return false;
     }
-
-
-    try {
-
-
-        const response = await fetch(API_URL, {
-
-            method: "POST",
-
-            headers: {
-
-                "Content-Type":
-                    "text/plain;charset=utf-8"
-
-            },
-
-            body: JSON.stringify({
-
-                action: "checkAdmin",
-
-                token: token
-
-            })
-
-        });
-
-
-        const result =
-            await response.json();
-
-
-        console.log(
-            "Admin Check:",
-            result
-        );
-
-
-        /* ไม่มีสิทธิ์ */
-
-        if (!result.success) {
-
-            alert(
-                result.message ||
-                "คุณไม่มีสิทธิ์เข้าใช้งาน"
-            );
-
-
-            sessionStorage.removeItem(
-                "loginToken"
-            );
-
-            sessionStorage.removeItem(
-                "currentUser"
-            );
-
-            localStorage.removeItem(
-                "loginToken"
-            );
-
-            localStorage.removeItem(
-                "currentUser"
-            );
-
-
-            window.location.href =
-                "Menu.html";
-
-            return;
-
-        }
-
-
-        /* ==================================
-           ผ่านการตรวจสอบ
-        ================================== */
-
-        const user =
-            result.user;
-
-
-        if (user) {
-            if (String(user.Role || "").trim().toLowerCase() === "owner") {
-                const ownerMenu = document.getElementById("ownerUsersMenu");
-                const ownerQuick = document.getElementById("ownerUsersQuick");
-                if (ownerMenu) ownerMenu.style.display = "block";
-                if (ownerQuick) ownerQuick.style.display = "block";
-            }
-
-            document.getElementById(
-                "adminName"
-            ).textContent =
-                user.Name;
-
-
-            document.getElementById(
-                "welcomeName"
-            ).textContent =
-                user.Name;
-
-        }
-
-
-        /* ซ่อน Loading */
-
-        document.getElementById(
-            "loading"
-        ).style.display = "none";
-
-
-        console.log(
-            "Admin Access Granted"
-        );
-
-
-    } catch (error) {
-
-
-        console.error(error);
-
-
-        alert(
-            "ไม่สามารถตรวจสอบสิทธิ์ได้"
-        );
-
-
-        window.location.href =
-            "Users.html";
-
-    }
-
+    currentAdmin=result.user||{};
+    if(normalize(currentAdmin.Role)==="owner")$("ownerUsersMenu").style.display="block";
+    setText("adminName",currentAdmin.Name||"ผู้ดูแลระบบ");
+    setText("welcomeName",currentAdmin.Name||"ผู้ดูแลระบบ");
+    $("loading").style.display="none";
+    return true;
+  }catch(e){
+    console.error(e);
+    $("loading").textContent="ตรวจสอบสิทธิ์ไม่สำเร็จ กรุณารีเฟรชหน้าเว็บ";
+    showMessage("ตรวจสอบสิทธิ์ไม่ได้: "+e.message,"error");
+    return false;
+  }
 }
 
-
-/* ==========================================
-   Logout
-========================================== */
-
-function logout() {
-
-    sessionStorage.removeItem(
-        "loginToken"
-    );
-
-    sessionStorage.removeItem(
-        "currentUser"
-    );
-
-
-    localStorage.removeItem(
-        "loginToken"
-    );
-
-    localStorage.removeItem(
-        "currentUser"
-    );
-
-
-    window.location.href =
-        "Users.html";
-
+function clearLogin(){
+  ["loginToken","currentUser"].forEach(k=>{
+    sessionStorage.removeItem(k);
+    localStorage.removeItem(k);
+  });
+}
+function logout(){clearLogin();location.href="Users.html"}
+function goDashboard(){location.href="AdminDashboard.html"}
+function goProducts(){location.href="Products.html"}
+function goOrders(){location.href="OrdersAdmin.html"}
+function goStock(){location.href="Stock.html"}
+function goUsers(){
+  if(normalize(currentAdmin&&currentAdmin.Role)!=="owner"){
+    showMessage("เมนูจัดการสมาชิกสำหรับเจ้าของร้านเท่านั้น","error");
+    return;
+  }
+  location.href="AdminUsers.html";
 }
 
+/* โหลดสถานะร้านจาก Apps Script */
+function renderStoreStatus(){
+  const icon=$("storeIcon");
+  const status=$("storeStatusText");
+  const desc=$("storeStatusDesc");
+  const openBtn=$("openStoreBtn");
+  const closeBtn=$("closeStoreBtn");
 
-/* ==========================================
-   เมนูต่าง ๆ
-========================================== */
+  if(!storeStatusLoaded){
+    icon.textContent="⚠️";
+    icon.style.background="#fff3d7";
+    status.textContent="ยังตรวจสอบสถานะร้านไม่ได้";
+    status.style.color="#b45309";
+    desc.textContent="ตรวจสอบการตั้งค่า getStoreStatus ใน Code.gs";
+    openBtn.disabled=true;
+    closeBtn.disabled=true;
+    return;
+  }
 
-function showDashboard() {
+  icon.textContent=storeIsOpen?"🟢":"🔴";
+  icon.style.background=storeIsOpen?"#dcfce7":"#fee2e2";
+  status.textContent=storeIsOpen?"ร้านกำลังเปิดให้บริการ":"ร้านปิดให้บริการ";
+  status.style.color=storeIsOpen?"#16a34a":"#dc2626";
+  desc.textContent=storeIsOpen
+    ?"ลูกค้าสามารถสั่งอาหารได้"
+    :"ลูกค้าจะเห็นข้อความว่าขณะนี้ร้านปิด";
 
-    window.location.href =
-        "AdminDashboard.html";
-
+  openBtn.disabled=storeBusy||storeIsOpen;
+  closeBtn.disabled=storeBusy||!storeIsOpen;
 }
 
-
-function goProducts() {
-
-    alert(
-        "หน้านี้เราจะสร้างต่อเป็น Products.html"
-    );
-
-}
-
-
-function goUsers() {
-    window.location.href = "AdminUsers.html";
-}
-
-function goOrders() {
-    window.location.href = "OrdersAdmin.html";
-}
-
-
-function goStock() {
-    window.location.href = "Stock.html";
-    
-}
-
-function goProducts() {
-  window.location.href = "Products.html";
-}
-
-
-/* ==========================================
-   สถานะเปิด/ปิดร้าน
-========================================== */
-async function storeApi(payload) {
-    const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
+async function loadStoreStatus(){
+  try{
+    const result=await api({
+      action:"getStoreStatus",
+      token:getToken()
     });
-    return await response.json();
-}
-
-function paintStoreStatus(isOpen) {
-    const label = document.getElementById("storeStatusText");
-    const openBtn = document.getElementById("openStoreBtn");
-    const closeBtn = document.getElementById("closeStoreBtn");
-    label.textContent = isOpen ? "🟢 ร้านเปิดอยู่ — ลูกค้าสั่งอาหารได้" : "🔴 ร้านปิดอยู่ — ระบบปฏิเสธคำสั่งซื้อใหม่";
-    label.style.color = isOpen ? "#198754" : "#dc3545";
-    openBtn.disabled = isOpen;
-    closeBtn.disabled = !isOpen;
-}
-
-async function loadStoreStatus() {
-    const msg = document.getElementById("storeMessage");
-    try {
-        const result = await storeApi({ action: "getStoreStatus" });
-        if (!result.success) throw new Error(result.message || "โหลดสถานะร้านไม่สำเร็จ");
-        paintStoreStatus(result.isOpen !== false);
-        msg.textContent = "สถานะร้านถูกบันทึกในระบบแล้ว";
-    } catch (error) {
-        document.getElementById("storeStatusText").textContent = "ตรวจสอบสถานะร้านไม่ได้";
-        msg.textContent = error.message;
+    if(!result||result.success!==true){
+      throw new Error(result&&result.message?result.message:"อ่านสถานะร้านไม่ได้");
     }
+    storeIsOpen=result.isOpen===true||String(result.isOpen).toLowerCase()==="true";
+    storeStatusLoaded=true;
+  }catch(error){
+    storeStatusLoaded=false;
+    console.error("Load store status:",error);
+  }
+  renderStoreStatus();
 }
 
-async function setStoreOpen(isOpen) {
-    const token = sessionStorage.getItem("loginToken") || localStorage.getItem("loginToken");
-    const openBtn = document.getElementById("openStoreBtn");
-    const closeBtn = document.getElementById("closeStoreBtn");
-    const msg = document.getElementById("storeMessage");
-    openBtn.disabled = true;
-    closeBtn.disabled = true;
-    msg.textContent = "กำลังบันทึกสถานะร้าน...";
-    try {
-        const result = await storeApi({ action: "setStoreStatus", token: token, isOpen: isOpen });
-        if (!result.success) throw new Error(result.message || "เปลี่ยนสถานะร้านไม่สำเร็จ");
-        paintStoreStatus(result.isOpen !== false);
-        msg.textContent = result.message || "บันทึกสถานะร้านเรียบร้อยแล้ว";
-    } catch (error) {
-        msg.textContent = error.message || "เชื่อมต่อระบบไม่สำเร็จ";
-        await loadStoreStatus();
+/* ปุ่มเปิด/ปิดร้าน */
+async function changeStoreStatus(open){
+  if(storeBusy)return;
+  if(!storeStatusLoaded){
+    showMessage("ยังเปลี่ยนสถานะร้านไม่ได้ กรุณาตรวจสอบ Code.gs ก่อน","error");
+    return;
+  }
+
+  const question=open
+    ?"ยืนยันเปิดร้านอิ่มอร่อยหรือไม่?"
+    :"ยืนยันปิดร้านอิ่มอร่อยหรือไม่? ลูกค้าจะไม่สามารถส่งคำสั่งซื้อใหม่ได้";
+
+  if(!confirm(question))return;
+
+  storeBusy=true;
+  renderStoreStatus();
+
+  try{
+    const result=await api({
+      action:"setStoreStatus",
+      token:getToken(),
+      isOpen:open
+    });
+
+    if(!result||result.success!==true){
+      throw new Error(result&&result.message?result.message:"เปลี่ยนสถานะร้านไม่สำเร็จ");
     }
+
+    storeIsOpen=open;
+    storeStatusLoaded=true;
+    renderStoreStatus();
+    showMessage(open?"เปิดร้านเรียบร้อยแล้ว":"ปิดร้านเรียบร้อยแล้ว","success");
+  }catch(error){
+    showMessage("เปลี่ยนสถานะร้านไม่สำเร็จ: "+error.message,"error");
+    await loadStoreStatus();
+  }finally{
+    storeBusy=false;
+    renderStoreStatus();
+  }
 }
 
-/* ==========================================
-   เริ่มตรวจสอบ
-========================================== */
+/* โหลดข้อมูล Dashboard */
+async function loadProducts(){
+  const r=await api({action:"getProducts"});
+  if(r.success===false)throw new Error(r.message||"โหลดสินค้าไม่สำเร็จ");
+  if(Array.isArray(r.products))products=r.products;
+  else if(Array.isArray(r.data))products=r.data;
+  else if(Array.isArray(r))products=r;
+  else throw new Error("รูปแบบข้อมูลสินค้าจาก getProducts ไม่ถูกต้อง");
+  productsLoaded=true;
+}
+async function loadOrders(){
+  const r=await api({action:"getAdminOrders",token:getToken()});
+  if(!r.success)throw new Error(r.message||"โหลดคำสั่งซื้อไม่สำเร็จ");
+  if(!Array.isArray(r.orders))throw new Error("API ไม่ได้ส่งรายการ orders กลับมา");
+  orders=r.orders;
+  ordersLoaded=true;
+}
+async function loadMembers(){
+  if(normalize(currentAdmin&&currentAdmin.Role)!=="owner"){
+    membersLoaded=false;
+    return;
+  }
+  const r=await api({action:"getMembers",token:getToken()});
+  if(!r.success)throw new Error(r.message||"โหลดสมาชิกไม่สำเร็จ");
+  members=Array.isArray(r.members)?r.members:[];
+  membersLoaded=true;
+}
 
-checkAdminAccess().then(function () {
-    if (document.getElementById("loading").style.display === "none") {
-        loadStoreStatus();
+async function loadDashboard(){
+  const btn=$("refreshBtn");
+  btn.disabled=true;
+  btn.textContent="กำลังโหลด...";
+  hideMessage();
+  setText("systemStatus","กำลังโหลดข้อมูลจาก Google Sheets...");
+
+  const tasks=await Promise.allSettled([
+    loadProducts(),
+    loadOrders(),
+    loadMembers(),
+    loadStoreStatus()
+  ]);
+
+  const failed=[];
+  if(tasks[0].status==="rejected")failed.push("สินค้า: "+tasks[0].reason.message);
+  if(tasks[1].status==="rejected")failed.push("คำสั่งซื้อ: "+tasks[1].reason.message);
+  if(tasks[2].status==="rejected")failed.push("สมาชิก: "+tasks[2].reason.message);
+
+  renderDashboard();
+
+  if(failed.length){
+    showMessage("โหลดข้อมูลบางส่วนไม่สำเร็จ — "+failed.join(" | "),"error");
+    setText("systemStatus","โหลดข้อมูลได้บางส่วน");
+  }else{
+    showMessage("อัปเดตข้อมูล Dashboard เรียบร้อย","success");
+    setText("systemStatus","เชื่อมต่อข้อมูลที่จำเป็นสำเร็จ");
+  }
+
+  if(!storeStatusLoaded){
+    $("storeStatusDesc").textContent="ยังเชื่อมต่อสถานะร้านไม่ได้ โปรดตรวจสอบ Code.gs";
+  }
+
+  btn.disabled=false;
+  btn.textContent="↻ รีเฟรชข้อมูล";
+}
+
+function renderDashboard(){
+  setText("productCount",productsLoaded?products.length.toLocaleString("th-TH"):"—");
+
+  if(membersLoaded){
+    setText("userCount",members.length.toLocaleString("th-TH"));
+    setText("memberNote","สมาชิกจากชีต Users");
+  }else if(normalize(currentAdmin&&currentAdmin.Role)!=="owner"){
+    setText("userCount","จำกัดสิทธิ์");
+    setText("memberNote","ดูจำนวนสมาชิกได้เฉพาะ Owner");
+  }else{
+    setText("userCount","—");
+    setText("memberNote","โหลดข้อมูลสมาชิกไม่สำเร็จ");
+  }
+
+  const today=new Date();
+  const revenueToday=ordersLoaded
+    ?orders.filter(o=>isRevenueOrder(o)&&isSameDay(orderDate(o),today)).reduce((sum,o)=>sum+orderTotal(o),0)
+    :null;
+
+  setText("todaySales",revenueToday===null?"—":money(revenueToday));
+  setText("salesNote",ordersLoaded?"เฉพาะออเดอร์ที่เข้าเงื่อนไขยอดขาย":"โหลดข้อมูลคำสั่งซื้อไม่ได้");
+  setText("orderCount",ordersLoaded?orders.length.toLocaleString("th-TH"):"—");
+
+  const pending=ordersLoaded?orders.filter(o=>statusType(o.Status)==="pending").length:0;
+  const making=ordersLoaded?orders.filter(o=>statusType(o.Status)==="making").length:0;
+  const ready=ordersLoaded?orders.filter(o=>["ready","done"].includes(statusType(o.Status))).length:0;
+
+  setText("pendingCount",ordersLoaded?pending.toLocaleString("th-TH"):"—");
+  setText("makingCount",ordersLoaded?making.toLocaleString("th-TH"):"—");
+  setText("readyCount",ordersLoaded?ready.toLocaleString("th-TH"):"—");
+  setText("pendingNote",ordersLoaded?pending+" รายการรอดำเนินการ":"โหลดสถานะไม่ได้");
+
+  const low=productsLoaded?products.filter(p=>activeProduct(p)&&productStock(p)<=5).length:0;
+  setText("lowStockCount",productsLoaded?low.toLocaleString("th-TH"):"—");
+
+  renderRecentOrders();
+  renderPopular();
+  renderStock();
+  renderSalesChart();
+}
+
+function renderRecentOrders(){
+  const body=$("recentOrders");
+  if(!ordersLoaded){
+    body.innerHTML='<tr><td colspan="5" class="table-empty">โหลดคำสั่งซื้อไม่สำเร็จ</td></tr>';
+    return;
+  }
+  const list=[...orders].sort((a,b)=>(orderDate(b)?.getTime()||0)-(orderDate(a)?.getTime()||0)).slice(0,8);
+  if(!list.length){
+    body.innerHTML='<tr><td colspan="5" class="table-empty">ยังไม่มีคำสั่งซื้อ</td></tr>';
+    return;
+  }
+  body.innerHTML=list.map(o=>{
+    const d=orderDate(o),t=statusType(o.Status);
+    return `<tr>
+      <td><div class="order-id">${esc(o.OrderID||"—")}</div></td>
+      <td>${esc(o.CustomerName||"ไม่ระบุ")}<div class="subline">${esc(o.CustomerEmail||"")}</div></td>
+      <td>${d?esc(d.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"})):"—"}</td>
+      <td><b>${money(orderTotal(o))}</b></td>
+      <td><span class="pill ${t}">${esc(statusLabel(o.Status))}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+function renderPopular(){
+  const el=$("popularList");
+  if(!ordersLoaded){
+    el.innerHTML='<div class="table-empty">ไม่สามารถคำนวณเมนูขายดีได้ เพราะโหลดคำสั่งซื้อไม่สำเร็จ</div>';
+    return;
+  }
+  const counts=new Map();
+  orders.filter(isRevenueOrder).forEach(o=>(Array.isArray(o.Items)?o.Items:[]).forEach(i=>{
+    const name=String(i.ProductName||i.Name||"ไม่ระบุชื่อสินค้า");
+    counts.set(name,(counts.get(name)||0)+number(i.Quantity||i.quantity||0));
+  }));
+  const arr=[...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(!arr.length){
+    el.innerHTML='<div class="table-empty">ยังไม่มีรายการขายที่ใช้คำนวณเมนูขายดีได้</div>';
+    return;
+  }
+  el.innerHTML=arr.map(([name,count],i)=>`
+    <div class="popular-item">
+      <div class="rank">${i+1}</div>
+      <div><div class="popular-name">${esc(name)}</div><div class="popular-meta">จำนวนขายรวม</div></div>
+      <div class="popular-count">${count.toLocaleString("th-TH")} ชิ้น</div>
+    </div>`).join("");
+}
+
+function renderStock(){
+  const el=$("stockList");
+  if(!productsLoaded){
+    el.innerHTML='<div class="table-empty">โหลดข้อมูลสินค้า/สต็อกไม่สำเร็จ</div>';
+    return;
+  }
+  const low=products.filter(p=>activeProduct(p)&&productStock(p)<=5).sort((a,b)=>productStock(a)-productStock(b)).slice(0,6);
+  if(!low.length){
+    el.innerHTML='<div class="table-empty">ไม่มีสินค้าที่คงเหลือ 5 ชิ้นหรือน้อยกว่า 🎉</div>';
+    return;
+  }
+  el.innerHTML=low.map(p=>{
+    const qty=productStock(p),state=qty<=0?"out":"low";
+    return `<div class="stock-item">
+      <div><div class="stock-name">${esc(productName(p))}${p.Size?" · "+esc(p.Size):""}</div>
+      <div class="stock-detail">รหัสสินค้า: ${esc(p.ProductID||"—")}</div></div>
+      <div class="stock-qty"><span class="pill ${state}">${qty<=0?"หมด":qty+" ชิ้น"}</span></div>
+    </div>`;
+  }).join("");
+}
+
+function renderSalesChart(){
+  const canvas=$("salesChart"),wrap=canvas.parentElement,ctx=canvas.getContext("2d");
+  const days=number($("salesRange").value)||7;
+  const dpr=window.devicePixelRatio||1;
+  const w=Math.max(300,wrap.clientWidth),h=Math.max(200,wrap.clientHeight);
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+
+  if(!ordersLoaded){
+    ctx.fillStyle="#74808b";ctx.font="14px Tahoma,Arial";ctx.textAlign="center";
+    ctx.fillText("ไม่สามารถโหลดข้อมูลยอดขายได้",w/2,h/2);
+    return;
+  }
+
+  const today=new Date(),points=[];
+  for(let i=days-1;i>=0;i--){
+    const day=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);
+    const value=orders.filter(o=>isRevenueOrder(o)&&isSameDay(orderDate(o),day)).reduce((sum,o)=>sum+orderTotal(o),0);
+    points.push({day,value});
+  }
+
+  const left=45,right=12,top=15,bottom=34,plotW=w-left-right,plotH=h-top-bottom;
+  const maxVal=Math.max(1,...points.map(p=>p.value));
+  ctx.font="10px Tahoma,Arial";ctx.textAlign="right";ctx.textBaseline="middle";
+
+  for(let i=0;i<=4;i++){
+    const y=top+plotH*i/4;
+    ctx.strokeStyle="#e8edf1";ctx.lineWidth=1;ctx.beginPath();
+    ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();
+    ctx.fillStyle="#78838d";
+    ctx.fillText(Math.round(maxVal*(4-i)/4).toLocaleString("th-TH"),left-7,y);
+  }
+
+  const gap=plotW/days,barW=Math.max(4,Math.min(26,gap*.56));
+  points.forEach((p,i)=>{
+    const x=left+gap*i+(gap-barW)/2,bh=p.value/maxVal*plotH,y=top+plotH-bh;
+    ctx.fillStyle="#e53935";ctx.fillRect(x,y,barW,bh);
+    ctx.fillStyle="#78838d";ctx.textAlign="center";ctx.textBaseline="top";
+    if(days<=14||i%Math.ceil(days/7)===0||i===days-1){
+      ctx.fillText(p.day.getDate()+"/"+(p.day.getMonth()+1),x+barW/2,top+plotH+9);
     }
+  });
+}
+
+function exportOrders(){
+  if(!ordersLoaded){
+    showMessage("ยังส่งออกรายงานไม่ได้ เพราะโหลดคำสั่งซื้อไม่สำเร็จ กรุณารีเฟรชก่อน","error");
+    return;
+  }
+  const headers=["OrderID","CustomerName","CustomerEmail","OrderDate","Total","Status","PaymentStatus","Items"];
+  const rows=orders.map(o=>[
+    o.OrderID||"",o.CustomerName||"",o.CustomerEmail||"",o.OrderDate||"",
+    orderTotal(o),o.Status||"",o.Payment&&o.Payment.Status||"",
+    Array.isArray(o.Items)?o.Items.map(i=>`${i.ProductName||""} ${i.Size||""} x${number(i.Quantity)}`).join(" | "):""
+  ]);
+  const csv=[headers,...rows].map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="im-aroi-orders-"+dateKey(new Date())+".csv";
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  showMessage("ส่งออกรายงานคำสั่งซื้อเป็น CSV แล้ว","success");
+}
+
+let resizeTimer;
+window.addEventListener("resize",()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{if(ordersLoaded)renderSalesChart()},150);
 });
 
+(async()=>{
+  const ok=await checkAccess();
+  if(ok)await loadDashboard();
+})();
 </script>
-
-
 </body>
-
 </html>
