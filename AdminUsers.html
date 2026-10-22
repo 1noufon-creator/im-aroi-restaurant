@@ -1,44 +1,980 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>จัดการสมาชิก | ร้านอิ่มอร่อย</title>
-<style>
-:root{--green:#238636;--dark:#173b2a;--bg:#f4f7f4;--line:#dfe7df;--red:#c62828;--gold:#8a5a00}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:#243127}header{background:var(--dark);color:#fff;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header h1{font-size:21px;margin:0}header p{margin:6px 0 0;font-size:13px;color:#dce9de}.wrap{max-width:1100px;margin:24px auto;padding:0 16px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:16px}.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700;font-size:14px}.primary{background:var(--green);color:white}.secondary{background:#e8eee8;color:#203b29}.danger{background:#ffebee;color:var(--red)}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #173b2a0b}.notice{font-size:14px;line-height:1.65}.notice strong{color:var(--dark)}.status{padding:5px 9px;border-radius:20px;background:#e7f4e8;color:#216b2b;font-size:12px;display:inline-block}.role{font-size:12px;font-weight:700;border-radius:6px;padding:5px 8px;display:inline-block;background:#edf1ed}.role.owner{background:#fff1c9;color:var(--gold)}.role.admin{background:#e5f0ff;color:#1453a6}.role.customer{background:#edf1ed;color:#526052}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:12px 10px;border-bottom:1px solid #edf0ed;text-align:left;font-size:13px}th{background:#f7faf7;color:#526052}td .btn{padding:7px 9px;font-size:12px;margin:2px}.actions{white-space:nowrap}.muted{color:#667367;font-size:13px}.error{color:var(--red)}.success{color:#1b7a32}.search{padding:10px 12px;border:1px solid #cfdacf;border-radius:8px;max-width:100%;width:280px;font-size:14px}.empty{text-align:center;padding:26px;color:#6d786e}.footer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:14px}@media(max-width:600px){header h1{font-size:18px}.wrap{margin:14px auto}.card{padding:13px}.search{width:100%}.toolbar{align-items:stretch}}
-</style>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>เข้าสู่ระบบ | ร้านอิ่มอร่อย</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Tahoma,
+                sans-serif;
+
+            background: #ffffff;
+
+            color: #172033;
+
+            min-height: 100vh;
+        }
+
+
+        .page {
+
+            min-height: 100vh;
+
+            padding: 25px 20px 40px;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .food-bg {
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: 0.035;
+
+            font-size: 80px;
+        }
+
+
+        .food-bg span {
+
+            position: absolute;
+        }
+
+
+        .food1 {
+
+            top: 120px;
+            left: 30px;
+
+            transform: rotate(-20deg);
+        }
+
+
+        .food2 {
+
+            top: 180px;
+            right: 20px;
+
+            transform: rotate(15deg);
+        }
+
+
+        .food3 {
+
+            bottom: 150px;
+            left: 30px;
+
+            transform: rotate(15deg);
+        }
+
+
+        .food4 {
+
+            bottom: 50px;
+            right: 20px;
+
+            transform: rotate(-15deg);
+        }
+
+
+        .header {
+
+            position: relative;
+
+            z-index: 1;
+
+            text-align: center;
+
+            margin: 20px auto 40px;
+        }
+
+
+        .logo {
+
+            font-size: 80px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .shop-name {
+
+            font-size: 42px;
+
+            font-weight: 700;
+
+            color: #111111;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subtitle {
+
+            font-size: 20px;
+
+            color: #777777;
+        }
+
+
+        .login-card {
+
+            position: relative;
+
+            z-index: 2;
+
+            width: 100%;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            background: #ffffff;
+
+            border-radius: 30px;
+
+            padding: 45px 55px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.08);
+        }
+
+
+        .user-icon {
+
+            width: 78px;
+
+            height: 78px;
+
+            background: #e4f7ef;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 0 auto 18px;
+
+            font-size: 40px;
+        }
+
+
+        .login-title {
+
+            text-align: center;
+
+            font-size: 35px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .message {
+
+            display: none;
+
+            padding: 14px;
+
+            margin-bottom: 20px;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            font-size: 16px;
+        }
+
+
+        .message.error {
+
+            display: block;
+
+            background: #fff0f0;
+
+            color: #c62828;
+        }
+
+
+        .message.success {
+
+            display: block;
+
+            background: #edfff6;
+
+            color: #fd4d8d;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 22px;
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            font-size: 19px;
+
+            font-weight: 600;
+
+            margin-bottom: 9px;
+        }
+
+
+        .input-box {
+
+            position: relative;
+        }
+
+
+        .input-box input {
+
+            width: 100%;
+
+            height: 62px;
+
+            border: 2px solid #d9dee7;
+
+            border-radius: 15px;
+
+            padding:
+                0 55px;
+
+            font-size: 18px;
+
+            outline: none;
+        }
+
+
+        .input-box input:focus {
+
+            border-color: #fd4d8d;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(0, 168, 107, 0.08);
+        }
+
+
+        .input-icon {
+
+            position: absolute;
+
+            left: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            font-size: 23px;
+        }
+
+
+        .show-password {
+
+            position: absolute;
+
+            right: 18px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            font-size: 21px;
+        }
+
+
+        .remember-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            font-size: 16px;
+        }
+
+
+        .remember {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+
+        .remember input {
+
+            width: 18px;
+
+            height: 18px;
+        }
+
+
+        .forgot {
+
+            color: #fd4d8d;
+
+            text-decoration: none;
+        }
+
+
+        .login-button {
+
+            width: 100%;
+
+            height: 64px;
+
+            border: none;
+
+            border-radius: 16px;
+
+            background: #fd4d8d;
+
+            color: white;
+
+            font-size: 22px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .login-button:hover {
+
+            background: #fd4d8d;
+        }
+
+
+        .login-button:disabled {
+
+            background: #86cdb1;
+
+            cursor: wait;
+        }
+
+
+        .register-button {
+
+            display: block;
+
+            width: 100%;
+
+            height: 60px;
+
+            margin-top: 16px;
+
+            border:
+                2px solid
+                #fd4d8d;
+
+            border-radius: 16px;
+
+            color: #fd4d8d;
+
+            background: white;
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            line-height: 56px;
+        }
+
+
+        .register-button:hover {
+
+            background: #edfff6;
+        }
+
+
+        @media (max-width: 768px) {
+
+            .page {
+
+                padding:
+                    15px
+                    15px
+                    30px;
+            }
+
+
+            .shop-name {
+
+                font-size: 34px;
+            }
+
+
+            .subtitle {
+
+                font-size: 18px;
+            }
+
+
+            .login-card {
+
+                padding:
+                    32px
+                    24px;
+            }
+
+
+            .login-title {
+
+                font-size: 29px;
+            }
+
+        }
+
+
+        @media (max-width: 400px) {
+
+            .shop-name {
+
+                font-size: 29px;
+            }
+
+
+            .login-card {
+
+                padding:
+                    28px
+                    18px;
+            }
+
+
+            .remember-row {
+
+                font-size: 14px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
+
 <body>
-<header><div><h1>👥 จัดการสมาชิก</h1><p>ร้านอิ่มอร่อย · เฉพาะเจ้าของร้าน</p></div><button class="btn secondary" onclick="goDashboard()">กลับหน้าแอดมิน</button></header>
-<main class="wrap">
-  <section class="card notice"><strong>สิทธิ์การใช้งาน</strong><br>สมาชิกที่สมัครใหม่จะเป็น Customer อัตโนมัติ เจ้าของร้านสามารถแต่งตั้งหรือถอนสิทธิ์ Admin ได้ ส่วนการเปลี่ยนเจ้าของร้านต้องใช้ปุ่ม “โอนสิทธิ์เจ้าของร้าน” และบัญชีผู้รับต้องเป็นสมาชิกที่เปิดใช้งานอยู่</section>
-  <section class="toolbar"><input class="search" id="search" placeholder="ค้นหาชื่อหรืออีเมล" oninput="renderMembers()"><div><button class="btn secondary" onclick="loadMembers()">↻ โหลดข้อมูลใหม่</button></div></section>
-  <section class="card"><div id="message" class="notice muted">กำลังโหลดสมาชิก…</div><div class="tablewrap"><table><thead><tr><th>ชื่อสมาชิก</th><th>อีเมล</th><th>สถานะ</th><th>สิทธิ์</th><th>จัดการ</th></tr></thead><tbody id="membersBody"></tbody></table></div><div class="footer"><span id="count" class="muted"></span><span class="muted">ข้อมูลสมาชิกมาจาก Google Sheets: Users</span></div></section>
-</main>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
-let members = [];
-const token = sessionStorage.getItem("loginToken") || localStorage.getItem("loginToken") || "";
-const currentUser = (()=>{try{return JSON.parse(sessionStorage.getItem("currentUser") || localStorage.getItem("currentUser") || "{}")}catch(e){return {}}})();
-function setMessage(text, type="muted"){const el=document.getElementById("message");el.className="notice "+type;el.textContent=text;}
-async function api(payload){const res=await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)});return await res.json();}
-function roleKey(role){return String(role||"Customer").trim().toLowerCase()}
-function roleLabel(role){const r=roleKey(role);return r==="owner"?"Owner · เจ้าของร้าน":r==="admin"?"Admin · ผู้ดูแล":"Customer · ลูกค้า"}
-function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-async function loadMembers(){
-  if(!token){setMessage("ไม่พบ Token กรุณาเข้าสู่ระบบใหม่", "error");return;}
-  setMessage("กำลังโหลดข้อมูลสมาชิก…");
-  try{const data=await api({action:"getMembers",token});if(!data.success){setMessage(data.message||"ไม่สามารถโหลดสมาชิกได้","error");if(/เจ้าของร้าน|Session|สิทธิ์/.test(data.message||""))setTimeout(()=>location.href="Users.html",1800);return;}members=data.members||[];setMessage("โหลดข้อมูลสมาชิกสำเร็จ","success");renderMembers();}
-  catch(err){setMessage("เชื่อมต่อระบบไม่สำเร็จ กรุณาตรวจสอบ API_URL และการ Deploy Apps Script", "error");}
-}
-function renderMembers(){const query=(document.getElementById("search").value||"").trim().toLowerCase();const list=members.filter(m=>(String(m.Name)+" "+String(m.Email)).toLowerCase().includes(query));const body=document.getElementById("membersBody");document.getElementById("count").textContent=`แสดง ${list.length} จาก ${members.length} สมาชิก`;
- if(!list.length){body.innerHTML='<tr><td colspan="5" class="empty">ไม่พบสมาชิก</td></tr>';return;}
- body.innerHTML=list.map(m=>{const r=roleKey(m.Role);const badge=r==="owner"?"owner":r==="admin"?"admin":"customer";let actions="—";if(r!=="owner"&&String(m.Status).toLowerCase()==="active")actions=`<button class="btn ${r==='admin'?'danger':'primary'}" onclick="changeRole('${escapeHTML(m.UserID)}','${r==='admin'?'Customer':'Admin'}')">${r==='admin'?'ถอนสิทธิ์ Admin':'แต่งตั้ง Admin'}</button> <button class="btn secondary" onclick="transferOwnership('${escapeHTML(m.UserID)}','${escapeHTML(m.Name)}')">โอนสิทธิ์เจ้าของร้าน</button>`;return `<tr><td>${escapeHTML(m.Name)}</td><td>${escapeHTML(m.Email)}</td><td><span class="status">${escapeHTML(m.Status||'ไม่ระบุ')}</span></td><td><span class="role ${badge}">${roleLabel(m.Role)}</span></td><td class="actions">${actions}</td></tr>`;}).join("");}
-async function changeRole(userID,role){const member=members.find(m=>String(m.UserID)===String(userID));if(!member)return;if(!confirm(role==="Admin"?`แต่งตั้ง ${member.Name} เป็น Admin ใช่หรือไม่?`:`ถอนสิทธิ์ Admin ของ ${member.Name} และเปลี่ยนเป็น Customer ใช่หรือไม่?`))return;setMessage("กำลังบันทึกสิทธิ์…");try{const d=await api({action:"setMemberRole",token,userID,role});setMessage(d.message||"ดำเนินการเสร็จแล้ว",d.success?"success":"error");if(d.success)await loadMembers();}catch(e){setMessage("บันทึกไม่สำเร็จ กรุณาลองใหม่", "error");}}
-async function transferOwnership(userID,name){if(!confirm(`ยืนยันโอนสิทธิ์เจ้าของร้านให้ ${name} ใช่หรือไม่?\n\nหลังโอน บัญชีเจ้าของร้านเดิมจะกลายเป็น Admin และการจัดการสมาชิก/โอนเจ้าของจะทำได้จากบัญชีใหม่`))return;const confirmText=prompt('เพื่อยืนยัน กรุณาพิมพ์คำว่า โอนสิทธิ์');if(confirmText!=="โอนสิทธิ์"){alert("ยกเลิกการโอนสิทธิ์");return;}setMessage("กำลังโอนสิทธิ์เจ้าของร้าน…");try{const d=await api({action:"transferOwner",token,userID});setMessage(d.message||"ดำเนินการเสร็จแล้ว",d.success?"success":"error");if(d.success){alert(d.message);location.href="Users.html";} }catch(e){setMessage("โอนสิทธิ์ไม่สำเร็จ กรุณาลองใหม่", "error");}}
-function goDashboard(){location.href="AdminDashboard.html";}
-if(!token){setMessage("ไม่พบ Token กรุณาเข้าสู่ระบบใหม่", "error");}else{loadMembers();}
-</script>
+
+
+    <div class="food-bg">
+
+        <span class="food1">🍕</span>
+
+        <span class="food2">🍟</span>
+
+        <span class="food3">🥤</span>
+
+        <span class="food4">🍔</span>
+
+    </div>
+
+
+    <main class="page">
+
+
+        <section class="header">
+
+            <div class="logo">
+                🍔
+            </div>
+
+
+            <div class="shop-name">
+                ร้านอิ่มอร่อย
+            </div>
+
+
+            <div class="subtitle">
+                อร่อยง่าย สั่งได้ทุกที่
+            </div>
+
+        </section>
+
+
+
+        <section class="login-card">
+
+
+            <div class="user-icon">
+                👤
+            </div>
+
+
+            <h1 class="login-title">
+                เข้าสู่ระบบ
+            </h1>
+
+
+            <div
+                id="messageBox"
+                class="message"
+            ></div>
+
+
+            <form id="loginForm">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            ✉
+                        </span>
+
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="กรอกอีเมลของคุณ"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <span class="input-icon">
+                            🔒
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="กรอกรหัสผ่าน"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                        >
+                            👁
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="remember-row">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            id="remember"
+                        >
+
+                        <span>
+                            จดจำฉัน
+                        </span>
+
+                    </label>
+
+
+                    <a
+                        href="#"
+                        class="forgot"
+                        onclick="return false;"
+                    >
+                        ลืมรหัสผ่าน?
+                    </a>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="loginButton"
+                >
+                    เข้าสู่ระบบ
+                </button>
+
+
+            </form>
+
+
+
+            <a
+                href="Register.html"
+                class="register-button"
+            >
+                สมัครสมาชิก
+            </a>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <script>
+
+        // =================================================
+        // URL ของ Google Apps Script
+        // =================================================
+
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbzyjIj7SCD0TFaecm7-BKqu1Q7J2mhhY0DE5wqAaLEfCnayEWTju7MlcH9Nr2VIgvuP/exec";
+
+
+        // =================================================
+        // แสดง / ซ่อน Password
+        // =================================================
+
+        document
+            .getElementById("showPassword")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const password =
+                        document.getElementById(
+                            "password"
+                        );
+
+
+                    if (
+                        password.type ===
+                        "password"
+                    ) {
+
+                        password.type =
+                            "text";
+
+                        this.textContent =
+                            "🙈";
+
+                    } else {
+
+                        password.type =
+                            "password";
+
+                        this.textContent =
+                            "👁";
+
+                    }
+
+                }
+            );
+
+
+        // =================================================
+        // แสดงข้อความ
+        // =================================================
+
+        function showMessage(
+            message,
+            type
+        ) {
+
+            const box =
+                document.getElementById(
+                    "messageBox"
+                );
+
+
+            box.textContent =
+                message;
+
+
+            box.className =
+                "message " + type;
+
+        }
+
+
+        // =================================================
+        // Login
+        // =================================================
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const email =
+                        document
+                            .getElementById(
+                                "email"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    const password =
+                        document
+                            .getElementById(
+                                "password"
+                            )
+                            .value;
+
+
+                    const remember =
+                        document
+                            .getElementById(
+                                "remember"
+                            )
+                            .checked;
+
+
+                    const loginButton =
+                        document
+                            .getElementById(
+                                "loginButton"
+                            );
+
+
+                    if (
+                        !email ||
+                        !password
+                    ) {
+
+                        showMessage(
+                            "กรุณากรอก Email และ Password",
+                            "error"
+                        );
+
+                        return;
+
+                    }
+
+
+                    loginButton.disabled =
+                        true;
+
+
+                    loginButton.textContent =
+                        "กำลังเข้าสู่ระบบ...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                API_URL,
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    redirect:
+                                        "follow",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "text/plain;charset=utf-8"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            action:
+                                                "login",
+
+                                            email:
+                                                email,
+
+                                            password:
+                                                password
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (
+                            !result.success
+                        ) {
+
+                            showMessage(
+                                result.message ||
+                                "เข้าสู่ระบบไม่สำเร็จ",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
+
+                        // =================================================
+                        // เก็บข้อมูลผู้ใช้
+                        // =================================================
+
+                        const storage =
+                            remember
+                                ? localStorage
+                                : sessionStorage;
+
+
+                        storage.setItem(
+                            "loginToken",
+                            result.token
+                        );
+
+
+                        storage.setItem(
+                            "currentUser",
+                            JSON.stringify(
+                                result.user
+                            )
+                        );
+
+
+                        showMessage(
+                            "เข้าสู่ระบบสำเร็จ",
+                            "success"
+                        );
+
+
+                        // =================================================
+                        // แยกหน้า Customer / Admin
+                        // =================================================
+
+                        setTimeout(
+                            function () {
+
+                                if (
+                                    ["admin", "owner"].includes(
+                                        String(result.user.Role || "Customer").trim().toLowerCase()
+                                    )
+                                ) {
+
+                                    window.location.href =
+                                        "AdminDashboard.html";
+
+                                } else {
+
+                                    window.location.href =
+                                        "Menu.html";
+
+                                }
+
+                            },
+                            700
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        showMessage(
+                            "ไม่สามารถเชื่อมต่อ Google Sheets ได้",
+                            "error"
+                        );
+
+
+                    } finally {
+
+                        loginButton.disabled =
+                            false;
+
+                        loginButton.textContent =
+                            "เข้าสู่ระบบ";
+
+                    }
+
+                }
+            );
+
+    </script>
+
 </body>
+
 </html>
