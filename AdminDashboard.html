@@ -157,6 +157,25 @@ tbody tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+
+<section class="section" style="margin-bottom:22px">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div id="storeIcon" style="width:54px;height:54px;border-radius:15px;background:#dcfce7;display:grid;place-items:center;font-size:27px">🟢</div>
+      <div>
+        <h2 style="margin:0 0 7px;font-size:19px">สถานะร้านอิ่มอร่อย</h2>
+        <div id="storeStatusText" style="font-weight:800;color:#16a34a">กำลังตรวจสอบสถานะร้าน...</div>
+        <div id="storeStatusDesc" style="font-size:13px;color:#7b8492;margin-top:5px">สถานะร้านสำหรับลูกค้า</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="openStoreBtn" onclick="changeStoreStatus(true)">🟢 เปิดร้าน</button>
+      <button class="btn" id="closeStoreBtn" onclick="changeStoreStatus(false)" style="border-color:#fecaca;color:#dc2626">🔴 ปิดร้าน</button>
+    </div>
+  </div>
+</section>
+
+
     <div id="message" class="message" role="status"></div>
 
     <section class="cards">
@@ -918,6 +937,105 @@ window.addEventListener("resize",() => {
     if (ordersLoaded) renderSalesChart();
   },150);
 });
+
+
+let storeIsOpen = null;
+let storeStatusLoaded = false;
+let storeBusy = false;
+
+function renderStoreStatus() {
+  const icon = document.getElementById("storeIcon");
+  const text = document.getElementById("storeStatusText");
+  const desc = document.getElementById("storeStatusDesc");
+  const openBtn = document.getElementById("openStoreBtn");
+  const closeBtn = document.getElementById("closeStoreBtn");
+
+  if (!storeStatusLoaded) {
+    text.textContent = "ยังตรวจสอบสถานะร้านไม่ได้";
+    text.style.color = "#b45309";
+    desc.textContent = "กรุณารีเฟรชข้อมูล";
+    icon.textContent = "⚠️";
+    openBtn.disabled = true;
+    closeBtn.disabled = true;
+    return;
+  }
+
+  icon.textContent = storeIsOpen ? "🟢" : "🔴";
+  icon.style.background = storeIsOpen ? "#dcfce7" : "#fee2e2";
+  text.textContent = storeIsOpen ? "ร้านกำลังเปิดให้บริการ" : "ร้านปิดให้บริการ";
+  text.style.color = storeIsOpen ? "#16a34a" : "#dc2626";
+  desc.textContent = storeIsOpen
+    ? "ลูกค้าสามารถสั่งอาหารได้"
+    : "ลูกค้าจะเห็นข้อความว่าขณะนี้ร้านปิด";
+
+  openBtn.disabled = storeBusy || storeIsOpen;
+  closeBtn.disabled = storeBusy || !storeIsOpen;
+}
+
+async function loadStoreStatus() {
+  try {
+    const result = await api({
+      action: "getStoreStatus",
+      token: getToken()
+    });
+
+    if (!result.success) {
+      throw new Error(result.message || "อ่านสถานะร้านไม่ได้");
+    }
+
+    storeIsOpen = result.isOpen === true;
+    storeStatusLoaded = true;
+    renderStoreStatus();
+  } catch (error) {
+    storeStatusLoaded = false;
+    renderStoreStatus();
+    console.error("Load store status:", error);
+  }
+}
+
+async function changeStoreStatus(open) {
+  if (storeBusy) return;
+
+  const question = open
+    ? "ยืนยันเปิดร้านอิ่มอร่อยหรือไม่?"
+    : "ยืนยันปิดร้านอิ่มอร่อยหรือไม่? ลูกค้าจะไม่สามารถสั่งอาหารใหม่ได้";
+
+  if (!confirm(question)) return;
+
+  storeBusy = true;
+  renderStoreStatus();
+
+  try {
+    const result = await api({
+      action: "setStoreStatus",
+      token: getToken(),
+      isOpen: open
+    });
+
+    if (!result.success) {
+      throw new Error(result.message || "เปลี่ยนสถานะร้านไม่สำเร็จ");
+    }
+
+    storeIsOpen = open;
+    storeStatusLoaded = true;
+    renderStoreStatus();
+
+    showMessage(
+      open ? "เปิดร้านเรียบร้อยแล้ว" : "ปิดร้านเรียบร้อยแล้ว",
+      "success"
+    );
+  } catch (error) {
+    showMessage(
+      "เปลี่ยนสถานะร้านไม่สำเร็จ: " + error.message,
+      "error"
+    );
+    await loadStoreStatus();
+  } finally {
+    storeBusy = false;
+    renderStoreStatus();
+  }
+}
+
 
 /* เริ่มทำงานเมื่อเปิดหน้า */
 (async function init() {
