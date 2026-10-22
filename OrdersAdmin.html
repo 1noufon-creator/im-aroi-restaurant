@@ -579,6 +579,15 @@ body {
 
     </div>
 
+<div id="orderNotice"
+     style="display:none; padding:12px; margin:12px 0;
+            background:#fff3cd; border-radius:8px; font-weight:bold;">
+</div>
+
+<button type="button" class="refresh-btn" onclick="enableOrderSound()">
+    🔔 เปิดเสียงแจ้งเตือน
+</button>
+
 
     <button
         class="refresh-btn"
@@ -774,6 +783,71 @@ const token =
 let orders = [];
 
 let currentFilter = "ALL";
+let knownOrderIds = null;
+let pollInProgress = false;
+let orderAudioContext = null;
+
+function enableOrderSound() {
+    try {
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) {
+            alert("เบราว์เซอร์นี้ไม่รองรับเสียงแจ้งเตือน");
+            return;
+        }
+
+        if (!orderAudioContext) {
+            orderAudioContext = new AudioContextClass();
+        }
+
+        orderAudioContext.resume().then(() => {
+            playOrderSound();
+            alert("เปิดเสียงแจ้งเตือนแล้ว");
+        });
+    } catch (error) {
+        alert("เปิดเสียงไม่สำเร็จ กรุณาตรวจสอบการตั้งค่าเสียงของเบราว์เซอร์");
+    }
+}
+
+function playOrderSound() {
+    if (!orderAudioContext ||
+        orderAudioContext.state !== "running") {
+        return;
+    }
+
+    const oscillator = orderAudioContext.createOscillator();
+    const gain = orderAudioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.value = 880;
+    gain.gain.value = 0.2;
+
+    oscillator.connect(gain);
+    gain.connect(orderAudioContext.destination);
+
+    oscillator.start();
+
+    gain.gain.setValueAtTime(0.2, orderAudioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        orderAudioContext.currentTime + 0.6
+    );
+
+    oscillator.stop(orderAudioContext.currentTime + 0.6);
+}
+
+function notifyNewOrders(newOrders) {
+    if (!newOrders.length) return;
+
+    const notice = document.getElementById("orderNotice");
+
+    notice.style.display = "block";
+    notice.textContent =
+        "🔔 มีคำสั่งซื้อใหม่ " + newOrders.length + " รายการ!";
+
+    playOrderSound();
+}
 
 
 
@@ -1001,32 +1075,35 @@ async function loadOrders() {
                 }
 
             );
+        
+const fetchedOrders = Array.isArray(result.orders)
+    ? result.orders
+    : [];
 
+let newOrders = [];
 
-        const result =
-            await response.json();
+if (knownOrderIds !== null) {
+    newOrders = fetchedOrders.filter(order =>
+        order.OrderID &&
+        !knownOrderIds.has(String(order.OrderID))
+    );
+}
 
+knownOrderIds = new Set(
+    fetchedOrders
+        .filter(order => order.OrderID)
+        .map(order => String(order.OrderID))
+);
 
-        if (!result.success) {
+orders = fetchedOrders;
 
-            throw new Error(
-                result.message ||
-                "โหลดคำสั่งซื้อไม่สำเร็จ"
-            );
-        }
+if (newOrders.length > 0) {
+    notifyNewOrders(newOrders);
+}
 
+updateStats();
+renderOrders();
 
-        orders =
-            Array.isArray(
-                result.orders
-            )
-            ? result.orders
-            : [];
-
-
-        updateStats();
-
-        renderOrders();
 
 
         loading.style.display =
@@ -1059,6 +1136,20 @@ async function loadOrders() {
 
 }
 
+
+function startOrderPolling() {
+    setInterval(async () => {
+        if (pollInProgress || document.hidden) return;
+
+        pollInProgress = true;
+
+        try {
+            await loadOrders(true);
+        } finally {
+            pollInProgress = false;
+        }
+    }, 5000);
+}
 
 
 // =====================================================
@@ -1783,6 +1874,7 @@ async function changeStatus(
 
 
         await loadOrders();
+        startOrderPolling();
 
 
     }
