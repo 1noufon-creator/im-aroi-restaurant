@@ -71,6 +71,66 @@ button{
     border:1px solid #fff;
 }
 
+
+/* ปุ่มเมนูสามขีด */
+.menu-wrap {
+    position: relative;
+}
+
+.menu-toggle {
+    background: #fff;
+    color: #fd4d8d;
+    font-weight: bold;
+    min-width: 95px;
+}
+
+.menu-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px #0002;
+    padding: 8px;
+    z-index: 100;
+}
+
+.menu-dropdown.show {
+    display: block;
+}
+
+.menu-dropdown button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    color: #333;
+    padding: 13px 12px;
+    font-size: 15px;
+    border-radius: 8px;
+}
+
+.menu-dropdown button:hover {
+    background: #fff0f6;
+    color: #fd4d8d;
+}
+
+@media (max-width: 600px) {
+    .head-right {
+        flex-wrap: nowrap;
+    }
+
+    .menu-toggle {
+        min-width: auto;
+    }
+
+    .menu-dropdown {
+        width: 210px;
+    }
+}
+
 /* ================= MAIN ================= */
 
 main{
@@ -457,49 +517,63 @@ h1{
         🍔 ร้านอิ่มอร่อย
     </div>
 
+<div class="head-right">
 
-    <div class="head-right">
+    <span id="user" class="user"></span>
 
-        <span id="user" class="user"></span>
+    <button
+        class="cart"
+        onclick="openCart()"
+    >
+        🛒 ตะกร้า (<span id="count">0</span>)
+    </button>
 
-                <button
-            class="track"
-            onclick="location.href='CustomerProfile.html'"
->
-            👤 โปรไฟล์ของฉัน
-        </button>
-
+    <div class="menu-wrap">
         <button
-            class="track"
-            onclick="goTracking()"
+            class="menu-toggle"
+            type="button"
+            onclick="toggleMenu()"
+            aria-expanded="false"
+            aria-controls="menuDropdown"
         >
-            📦 ติดตาม
+            ☰ เมนู
         </button>
 
-        <button
-            class="track"
-            onclick="location.href='OrderHistory.html'"
->
-            📋 ประวัติคำสั่งซื้อ
-        </button>
+        <div id="menuDropdown" class="menu-dropdown">
 
+            <button
+                type="button"
+                onclick="menuGo('CustomerProfile.html')"
+            >
+                👤 โปรไฟล์ของฉัน
+            </button>
 
-                <button
-            class="cart"
-            onclick="openCart()"
-        >
-            🛒 ตะกร้า
-            (<span id="count">0</span>)
-        </button>
+            <button
+                type="button"
+                onclick="menuGo('OrderTracking.html')"
+            >
+                📦 ติดตาม
+            </button>
 
-        <button
-            class="logout"
-            onclick="logout()"
-        >
-            🚪 ออก
-        </button>
+            <button
+                type="button"
+                onclick="menuGo('OrderHistory.html')"
+            >
+                📋 ประวัติคำสั่งซื้อ
+            </button>
 
+            <button
+                type="button"
+                onclick="logout()"
+            >
+                🚪 ออกจากระบบ
+            </button>
+
+        </div>
     </div>
+
+</div>
+
 
 </header>
 
@@ -1956,6 +2030,34 @@ function summary(){
         "OrderSummary.html";
 
 }
+
+function toggleMenu() {
+    const menu = document.getElementById("menuDropdown");
+    const button = document.querySelector(".menu-toggle");
+
+    const isOpen = menu.classList.toggle("show");
+
+    button.setAttribute("aria-expanded", String(isOpen));
+}
+
+function menuGo(page) {
+    document.getElementById("menuDropdown").classList.remove("show");
+    document.querySelector(".menu-toggle")
+        .setAttribute("aria-expanded", "false");
+
+    location.href = page;
+}
+
+// ปิดเมนูเมื่อคลิกพื้นที่อื่น
+document.addEventListener("click", function(event) {
+    const wrap = document.querySelector(".menu-wrap");
+
+    if (wrap && !wrap.contains(event.target)) {
+        document.getElementById("menuDropdown").classList.remove("show");
+        document.querySelector(".menu-toggle")
+            .setAttribute("aria-expanded", "false");
+    }
+});
 
 
 /* ================= TRACKING ================= */
